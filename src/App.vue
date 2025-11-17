@@ -1,6 +1,6 @@
 <script setup>
 import Header from "./components/HeaderSection.vue";
-// import Footer from "./components/FooterSection.vue"
+import Footer from "./components/FooterSection.vue"
 </script>
 
 <template>
@@ -14,9 +14,6 @@ import Header from "./components/HeaderSection.vue";
        <RouterView />
      </main>
     <!-- Footer Header Section -->
-    <footer class="py-6 text-center text-gray-500 text-sm border-t">
-      Hak Cipta © 2025 <span class="font-semibold text-green-700">PalmDetector</span>
-    </footer>
   </div>
 
 </template>
