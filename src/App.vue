@@ -1,20 +1,19 @@
 <script setup>
 import Header from "./components/HeaderSection.vue";
+import Footer from "./components/FooterSection.vue"
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen flex flex-col bg-gray-100">
 
-    <!-- Global Header -->
+    <!-- Global Header Section -->
     <Header />
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-6">
-      <h2 class="text-2xl font-semibold mb-4">Welcome!</h2>
-      <p class="text-gray-700">
-        Ini adalah area konten utama. Ubah sesuai kebutuhan proyekmu.
-      </p>
-    </main>
-
+    <!-- Mains Section -->
+     <main class="flex-grow">
+       
+       <RouterView />
+     </main>
+    <!-- Footer Header Section -->
   </div>
+
 </template>
