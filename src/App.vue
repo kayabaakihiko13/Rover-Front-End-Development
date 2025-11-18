@@ -10,7 +10,6 @@ import Footer from "./components/FooterSection.vue"
     <Header />
     <!-- Mains Section -->
      <main class="flex-grow">
-       
        <RouterView />
      </main>
     <!-- Footer Header Section -->
