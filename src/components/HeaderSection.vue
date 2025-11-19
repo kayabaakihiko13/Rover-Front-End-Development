@@ -1,14 +1,12 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const open = ref(false);
+const username = ref(localStorage.getItem("username") || null);
 
-// username harus bisa update ketika login/logout
-const username = ref(null);
-
-// fungsi untuk ambil username terbaru dari localStorage
+// Fungsi untuk ambil username terbaru dari localStorage
 const refreshUser = () => {
   username.value = localStorage.getItem("username");
 };
@@ -17,18 +15,20 @@ const refreshUser = () => {
 onMounted(() => {
   refreshUser();
 
-  // listen event ketika halaman lain meng-update localStorage
+  // listen event ketika localStorage di tab lain berubah
   window.addEventListener("storage", refreshUser);
+});
+
+// cleanup event listener saat component di-unmount
+onBeforeUnmount(() => {
+  window.removeEventListener("storage", refreshUser);
 });
 
 // Logout function
 const logout = () => {
-  localStorage.removeItem("access_token");
+  localStorage.removeItem("token");
   localStorage.removeItem("username"); 
-  
-
-  refreshUser(); // 🔥 update UI setelah logout
-
+  username.value = null; // langsung update ref agar menu berubah
   router.push("/login");
 };
 </script>
