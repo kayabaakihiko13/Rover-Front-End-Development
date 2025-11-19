@@ -1,29 +1,34 @@
 <template>
   <div>
-
     <!-- Hero Section -->
     <section class="bg-green-50 w-full py-16">
       <div class="max-w-6xl mx-auto px-6 text-center">
+
         <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4">
           Selamat Datang di PalmDetector
         </h1>
+
         <p class="text-gray-600 mb-8 text-base md:text-lg">
           Deteksi kematangan buah sawit secara cepat dan akurat langsung dari ponselmu.
         </p>
 
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <RouterLink
+
+          <!-- FIX RouterLink casing -->
+          <router-link
             to="/login"
             class="bg-green-700 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-800 transition"
           >
             Masuk
-          </RouterLink>
-          <RouterLink
+          </router-link>
+
+          <router-link
             to="/register"
             class="bg-white border border-green-700 text-green-700 font-semibold px-6 py-3 rounded-lg hover:bg-green-50 transition"
           >
             Daftar
-          </RouterLink>
+          </router-link>
+
         </div>
       </div>
     </section>
@@ -62,6 +67,5 @@
 
       </div>
     </section>
-
   </div>
 </template>

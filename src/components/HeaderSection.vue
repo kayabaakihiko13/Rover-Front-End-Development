@@ -1,19 +1,35 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-const open = ref(false);
 const router = useRouter();
+const open = ref(false);
 
-const props = defineProps({
-  username: {
-    type: String,
-    default: null
-  }
+// username harus bisa update ketika login/logout
+const username = ref(null);
+
+// fungsi untuk ambil username terbaru dari localStorage
+const refreshUser = () => {
+  username.value = localStorage.getItem("username");
+};
+
+// panggil saat component dimount
+onMounted(() => {
+  refreshUser();
+
+  // listen event ketika halaman lain meng-update localStorage
+  window.addEventListener("storage", refreshUser);
 });
 
+// Logout function
 const logout = () => {
-  router.push("/logout");
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("username"); 
+  
+
+  refreshUser(); // 🔥 update UI setelah logout
+
+  router.push("/login");
 };
 </script>
 
@@ -21,13 +37,10 @@ const logout = () => {
   <nav class="bg-white shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        
+
         <!-- Logo -->
         <div class="flex-shrink-0">
-          <router-link
-            :to="props.username ? '/dashboard' : '/'"
-            class="flex items-center"
-          >
+          <router-link :to="username ? '/dashboard' : '/'" class="flex items-center">
             <img
               class="w-10 h-10 rounded-lg shadow-sm"
               src="../assets/vue.svg"
@@ -43,8 +56,9 @@ const logout = () => {
         <div class="hidden md:flex items-center space-x-4">
 
           <!-- Logged in -->
-          <div v-if="props.username" class="flex items-center space-x-4">
-            <span class="text-gray-700 font-medium">Hi, {{ props.username }}</span>
+          <div v-if="username" class="flex items-center space-x-4">
+            <span class="text-gray-700 font-medium">Hi, {{ username }}</span>
+
             <button @click="logout" class="text-gray-500 hover:text-red-600">
               Logout
             </button>
@@ -52,18 +66,12 @@ const logout = () => {
 
           <!-- Not logged in -->
           <div v-else class="flex items-center space-x-4">
-            <router-link
-              to="/login"
-              class="flex items-center text-gray-700 hover:text-green-700 font-medium"
-            >
-              <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk
+            <router-link to="/login" class="text-gray-700 hover:text-green-700 font-medium">
+              Masuk
             </router-link>
 
-            <router-link
-              to="/register"
-              class="flex items-center text-gray-700 hover:text-green-700 font-medium"
-            >
-              <i class="fa-solid fa-user-plus mr-1"></i> Daftar
+            <router-link to="/register" class="text-gray-700 hover:text-green-700 font-medium">
+              Daftar
             </router-link>
           </div>
 
@@ -101,9 +109,9 @@ const logout = () => {
       class="md:hidden px-2 pt-2 pb-3 space-y-1 bg-white shadow-inner"
     >
       <!-- Logged In -->
-      <div v-if="props.username">
+      <div v-if="username">
         <span class="block px-3 py-2 text-gray-700 font-medium">
-          Hi, {{ props.username }}
+          Hi, {{ username }}
         </span>
 
         <button
