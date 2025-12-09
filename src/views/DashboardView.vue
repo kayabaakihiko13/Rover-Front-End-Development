@@ -15,13 +15,13 @@
         </p>
 
         <img
-          src="#"
+          src="../assets/icons/camera.jpg"
           alt="camera"
           class="w-24 h-24 mb-6"
         >
 
         <RouterLink
-          to="#"
+          to="/detection"
           class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
         >
           Mulai Deteksi
@@ -65,7 +65,7 @@
         </p>
 
         <img
-          src="#"
+          src="../assets/icons/histroy.jpg"
           alt="history"
           class="w-24 h-24 mb-6"
         >
