@@ -6,12 +6,15 @@ import Sortable from "sortablejs";
 const route = useRoute();
 const router = useRouter();
 
-// Gunakan base URL dari env
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 // Parsing data dari query
 const imageUrl = computed(() =>
   route.query.imageUrl ? decodeURIComponent(route.query.imageUrl) : ""
+);
+
+const image_path = computed(() => // ✅ tambahkan ini
+  route.query.image_path ? decodeURIComponent(route.query.image_path) : ""
 );
 
 const classLabels = computed(() => {
@@ -72,14 +75,13 @@ onMounted(() => {
   }
 });
 
-// ✅ Simpan hasil ke backend
 const saveResult = async () => {
   isSaving.value = true;
   errorMessage.value = "";
 
   try {
     const formData = new FormData();
-    formData.append("image_path", imageUrl.value);
+    formData.append("image_path", image_path.value); // ✅ kirim path relatif
     formData.append("semua_benar", semuaBenar.value ? "true" : "false");
 
     rows.value.forEach((row, i) => {
@@ -92,7 +94,6 @@ const saveResult = async () => {
       throw new Error("Token tidak ditemukan. Silakan login ulang.");
     }
 
-    // 🔑 Perbaiki URL: gunakan API_BASE_URL + path yang benar
     const response = await fetch(`${API_BASE_URL}/posts/simpan-edit`, {
       method: "POST",
       headers: {
@@ -102,21 +103,18 @@ const saveResult = async () => {
     });
 
     if (!response.ok) {
-      // Coba parse error dari backend
       let errorMsg = "Gagal menyimpan hasil.";
       try {
         const errData = await response.json();
         errorMsg = errData.detail || errorMsg;
       } catch {
-        // Jika bukan JSON, ambil teks
         const text = await response.text();
         errorMsg = `Error ${response.status}: ${text.substring(0, 100)}`;
       }
       throw new Error(errorMsg);
     }
 
-    // Sukses → redirect
-    router.push("/detection"); // Sesuaikan dengan route deteksi Anda
+    router.push("/detection");
   } catch (err) {
     console.error("Error saat menyimpan:", err);
     errorMessage.value = err.message || "Terjadi kesalahan. Coba lagi.";
@@ -129,7 +127,6 @@ const saveResult = async () => {
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 py-10">
     <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-5xl">
-      <!-- Pesan sukses -->
       <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-center">
         <h2 class="text-2xl font-bold text-green-700">✅ Terima kasih telah upload!</h2>
         <p class="text-green-800">Hasil deteksi siap diedit atau disimpan.</p>
@@ -151,9 +148,8 @@ const saveResult = async () => {
         />
       </div>
 
-      <!-- Form (dikirim via JS, bukan native) -->
       <form @submit.prevent="saveResult">
-        <input type="hidden" name="image_path" :value="imageUrl" />
+        <input type="hidden" name="image_path" :value="image_path" />
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <p class="text-lg">
@@ -213,7 +209,6 @@ const saveResult = async () => {
           </table>
         </div>
 
-        <!-- Checkbox -->
         <div class="flex items-center mt-4 mb-6">
           <input
             id="semua_benar"
@@ -226,12 +221,10 @@ const saveResult = async () => {
           </label>
         </div>
 
-        <!-- Error message -->
         <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
           {{ errorMessage }}
         </div>
 
-        <!-- Tombol simpan -->
         <button
           type="submit"
           :disabled="isSaving"

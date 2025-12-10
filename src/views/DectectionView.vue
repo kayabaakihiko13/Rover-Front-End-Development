@@ -5,10 +5,6 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const file = ref(null);
-const resultImage = ref(null);
-const predictData = ref({});
-const confidenceData = ref({});
-const bboxData = ref({});
 const isSubmitting = ref(false);
 const errorMessage = ref("");
 
@@ -52,25 +48,27 @@ const handleSubmit = async () => {
       return;
     }
 
+    // Ambil path relatif dari backend
+    const image_path = data.image_url; // ✅ "uploads/xxx.jpg"
+
+    // Bangun URL absolut untuk ditampilkan di halaman hasil
     const cleanBase = API_BASE_URL.replace(/\/+$/, "");
-    const cleanPath = data.image_url.replaceAll("\\", "/").replace(/^\/+/, "");
+    const cleanPath = image_path.replaceAll("\\", "/").replace(/^\/+/, "");
+    const imageUrl = `${cleanBase}/${cleanPath}`;
 
-    const finalImageUrl = `${cleanBase}/${cleanPath}`;
-
-    // Simpan hasil prediksi
     const labels = Object.keys(data.result?.predict || {});
     const count = labels.length;
 
     router.push({
       name: "result-detection",
       query: {
-        imageUrl: encodeURIComponent(finalImageUrl),
-        classLabels: JSON.stringify(labels),  // ✅ ["Matang"]
-        yamlLabels: JSON.stringify(Object.keys(data.result?.predict || {})),  // ✅ ["Matang"]
+        imageUrl: encodeURIComponent(imageUrl),
+        image_path: encodeURIComponent(image_path), // ✅ kirim path relatif
+        classLabels: JSON.stringify(labels),
+        yamlLabels: JSON.stringify(Object.keys(data.result?.predict || {})),
         classCount: count,
       },
     });
-
   } catch (err) {
     console.error(err);
     errorMessage.value = "Kesalahan jaringan.";
@@ -79,7 +77,6 @@ const handleSubmit = async () => {
   }
 };
 </script>
-
 
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-10">

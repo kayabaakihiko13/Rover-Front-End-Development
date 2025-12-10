@@ -7,7 +7,7 @@ import ForgotPasswordView from "../views/ForgotPasswordView.vue";
 import DashboardView from "../views/DashboardView.vue";
 import DetectionView from "../views/DectectionView.vue";
 import ResultDetectionView from "../views/ResultDetectionView.vue";
-
+import HistoryView from "../views/HistoryView.vue";
 
 const routes = [
   { path: "/", component: HomeView },
@@ -61,7 +61,13 @@ const routes = [
         return isNaN(parsed) ? 0 : parsed;
       })()
     })
-  }
+  },
+  {
+    path: "/history",
+    name: "history",
+    component: HistoryView,
+    meta: { requiresAuth: true }
+  },
 ];
 
 
