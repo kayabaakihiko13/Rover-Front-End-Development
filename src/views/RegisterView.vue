@@ -1,5 +1,5 @@
 <script setup>
-import { ref,computed} from "vue";
+import { ref,computed,watch} from "vue";
 import { useRouter } from "vue-router";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
@@ -23,6 +23,13 @@ const passwordError = computed(() => {
   }
   return "";
 });
+// handle usernameDouble
+const fieldErrors = ref({
+  username: "",
+});
+
+fieldErrors.value.username = "";
+errorMessage.value = "";
 
 const handleRegister = async () => {
   if (loading.value) return;
@@ -47,6 +54,10 @@ const handleRegister = async () => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      if(response.status == 400 && data.detail?.toLowerCase().includes("username")){
+        fieldErrors.value.username = data.detail;
+        return;
+      }
       errorMessage.value = data.detail ?? "Registrasi gagal.";
       return;
     }
@@ -99,7 +110,6 @@ const handleRegister = async () => {
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
                  focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
-
         <input 
           v-model="form.email"
           type="email"
@@ -130,7 +140,9 @@ const handleRegister = async () => {
         <p v-if="successMessage" class="text-green-600 text-sm text-center">
           {{ successMessage }}
         </p>
-
+        <p v-if="fieldErrors.username" class="text-red-500 text-sm">
+        {{ fieldErrors.username }}
+        </p>
         <button 
           type="submit"
           class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition disabled:opacity-60"
