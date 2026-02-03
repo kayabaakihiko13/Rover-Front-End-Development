@@ -7,7 +7,7 @@ const posts = ref([])
 const loading = ref(true)
 const error = ref(null)
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 // ✅ Fungsi aman untuk gabung URL
 const getImageUrl = (path) => {
