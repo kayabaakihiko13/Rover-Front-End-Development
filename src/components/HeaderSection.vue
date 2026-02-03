@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
-
+import { emitAuthChange } from "../utils/auth";
+import {useAuth} from "../utils/userAuth"
 const router = useRouter();
 const open = ref(false);
-const username = ref(localStorage.getItem("username") || null);
-
+const { username, isLoggedIn, syncAuth } = useAuth();
 // Fungsi untuk ambil username terbaru dari localStorage
 const refreshUser = () => {
   username.value = localStorage.getItem("username");
@@ -28,8 +28,9 @@ onBeforeUnmount(() => {
 const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username"); 
-  username.value = null; // langsung update ref agar menu berubah
-  router.push("/login");
+  emitAuthChange();
+  syncAuth();
+  router.replace("/login");
 };
 </script>
 

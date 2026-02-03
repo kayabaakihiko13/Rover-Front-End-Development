@@ -70,8 +70,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { emitAuthChange } from "../utils/auth.js"; // <-- IMPORTANT
-
+import { emitAuthChange } from "../utils/auth.js"; // <-- IMPORTANT"
 const router = useRouter();
 
 const form = ref({
@@ -82,7 +81,7 @@ const form = ref({
 const isSubmitting = ref(false);
 const errorMessage = ref("");
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const handleLogin = async () => {
   isSubmitting.value = true;
