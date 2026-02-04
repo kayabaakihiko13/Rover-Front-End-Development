@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from "vue";
+import { ref,computed,watch} from "vue";
 import { useRouter } from "vue-router";
-
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
 
 const form = ref({
@@ -15,40 +15,63 @@ const form = ref({
 const loading = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
+// mencegah password nya kurang dari 10 karakter
+const passwordError = computed(() => {
+  if (!form.value.password) return "";
+  if (form.value.password.length < 10) {
+    return "Password minimal 10 karakter";
+  }
+  return "";
+});
+// handle usernameDouble
+const fieldErrors = ref({
+  username: "",
+});
+
+fieldErrors.value.username = "";
+errorMessage.value = "";
 
 const handleRegister = async () => {
-  if (loading.value) return; // cegah double submit
+  if (loading.value) return;
+
+  if (passwordError.value) {
+    errorMessage.value = passwordError.value;
+    return;
+  }
+
   loading.value = true;
   errorMessage.value = "";
   successMessage.value = "";
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/users/register", {
+    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/register`;
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form.value),
     });
 
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      if(response.status == 400 && data.detail?.toLowerCase().includes("username")){
+        fieldErrors.value.username = data.detail;
+        return;
+      }
       errorMessage.value = data.detail ?? "Registrasi gagal.";
       return;
     }
 
     successMessage.value = "Registrasi berhasil! Mengarahkan ke login...";
-    setTimeout(() => {
-      router.push("/login");
-    }, 1000);
+    setTimeout(() => router.push("/login"), 1000);
 
-  } catch (error) {
+  } catch {
     errorMessage.value = "Gagal menghubungi server.";
   } finally {
     loading.value = false;
   }
 };
+
 </script>
 
 
@@ -66,6 +89,7 @@ const handleRegister = async () => {
           v-model="form.firstname"
           type="text"
           placeholder="Nama Depan"
+          required
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
                  focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
@@ -82,14 +106,15 @@ const handleRegister = async () => {
           v-model="form.username"
           type="text"
           placeholder="Username"
+          required
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
                  focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
-
         <input 
           v-model="form.email"
           type="email"
           placeholder="Email"
+          required
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
                  focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
@@ -99,8 +124,12 @@ const handleRegister = async () => {
           type="password"
           placeholder="Kata Sandi"
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
+
+        <p v-if="passwordError" class="text-red-500 text-sm">
+          {{ passwordError }}
+        </p>
 
         <!-- ERROR -->
         <p v-if="errorMessage" class="text-red-500 text-sm text-center">
@@ -111,7 +140,9 @@ const handleRegister = async () => {
         <p v-if="successMessage" class="text-green-600 text-sm text-center">
           {{ successMessage }}
         </p>
-
+        <p v-if="fieldErrors.username" class="text-red-500 text-sm">
+        {{ fieldErrors.username }}
+        </p>
         <button 
           type="submit"
           class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition disabled:opacity-60"
