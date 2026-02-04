@@ -41,7 +41,7 @@ const logout = () => {
         <!-- Logo -->
         <div class="flex-shrink-0">
           <router-link :to="username ? '/dashboard' : '/'" class="flex items-center">
-            <img class="w-10 h-10 rounded-lg shadow-sm" src="../assets/vue.svg" alt="PalmDetector Logo" />
+            <img class="w-10 h-10 rounded-lg shadow-sm" src="../assets/icons/logo.png" alt="PalmDetector Logo" />
             <span class="ml-2 font-bold text-green-700 text-xl tracking-wide">PalmDetector</span>
           </router-link>
         </div>
