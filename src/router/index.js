@@ -4,6 +4,7 @@ import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
 import ForgotPasswordView from "../views/ForgotPasswordView.vue";
+import ResetPasswordView from "../views/ResetPasswordView.vue";
 import DashboardView from "../views/DashboardView.vue";
 import DetectionView from "../views/DectectionView.vue";
 import ResultDetectionView from "../views/ResultDetectionView.vue";
@@ -29,7 +30,11 @@ const routes = [
     component: ForgotPasswordView,
     meta: { guestOnly: true }
   },
-
+  {
+    path: "/reset-password",
+    component: ResetPasswordView,
+    meta: { guestOnly: true }
+  },
   {
     path: "/dashboard",
     component: DashboardView,
