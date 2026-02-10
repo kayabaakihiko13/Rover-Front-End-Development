@@ -1,5 +1,5 @@
 <script setup>
-import { ref,computed,watch} from "vue";
+import { ref,computed} from "vue";
 import { useRouter } from "vue-router";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
@@ -92,16 +92,20 @@ const handleRegister = async () => {
           type="text"
           placeholder="Nama Depan"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
           v-model="form.lastname"
           type="text"
           placeholder="Nama Belakang"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
@@ -109,16 +113,20 @@ const handleRegister = async () => {
           type="text"
           placeholder="Username"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
         <input 
           v-model="form.email"
           type="email"
           placeholder="Email"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
@@ -126,8 +134,10 @@ const handleRegister = async () => {
           type="password"
           placeholder="Kata Sandi"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
         <!-- Password Error -->
         <p v-if="passwordError" class="text-red-500 text-sm mt-1">

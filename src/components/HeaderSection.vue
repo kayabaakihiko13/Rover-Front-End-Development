@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
-import { emitAuthChange } from "../utils/auth";
-import {useAuth} from "../utils/userAuth"
+import { emitAuthChange,useAuth} from "../main.js";
 const router = useRouter();
 const open = ref(false);
 const { username, isLoggedIn, syncAuth } = useAuth();

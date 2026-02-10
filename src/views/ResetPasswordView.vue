@@ -58,10 +58,13 @@ const handleReset = async () => {
 
       <form @submit.prevent="handleReset" class="space-y-4">
         <input v-model="newPassword" type="password" placeholder="Kata Sandi Baru"
-               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+               class="w-full border rounded-lg px-4 py-2 focus-visible:ring-2 
+        focus-visible:ring-green-500 
+        focus:outline-none" />
         <input v-model="confirmPassword" type="password" placeholder="Konfirmasi Kata Sandi"
-               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
-
+               class="w-full border rounded-lg px-4 py-2 focus-visible:ring-2 
+        focus-visible:ring-green-500 
+        focus:outline-none" />
         <button type="submit"
                 class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition">
           Reset Kata Sandi
