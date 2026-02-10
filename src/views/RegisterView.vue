@@ -1,5 +1,5 @@
 <script setup>
-import { ref,computed,watch} from "vue";
+import { ref,computed} from "vue";
 import { useRouter } from "vue-router";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
@@ -39,9 +39,10 @@ const handleRegister = async () => {
     return;
   }
 
-  loading.value = true;
+  // Reset error setiap submit baru
   errorMessage.value = "";
   successMessage.value = "";
+  fieldErrors.value.username = "";
 
   try {
     const url = `${API_BASE_URL.replace(/\/$/, "")}/users/register`;
@@ -50,6 +51,7 @@ const handleRegister = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form.value),
     });
+
 
     const data = await response.json().catch(() => ({}));
 
@@ -90,16 +92,20 @@ const handleRegister = async () => {
           type="text"
           placeholder="Nama Depan"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
           v-model="form.lastname"
           type="text"
           placeholder="Nama Belakang"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
@@ -107,27 +113,34 @@ const handleRegister = async () => {
           type="text"
           placeholder="Username"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
         <input 
           v-model="form.email"
           type="email"
           placeholder="Email"
           required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
 
         <input 
           v-model="form.password"
           type="password"
           placeholder="Kata Sandi"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                focus:ring-2 focus:ring-green-500 focus:outline-none"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2
+                focus:border-green-500
+                focus-visible:ring-2 focus-visible:ring-green-300
+                focus:outline-none"
         />
-
-        <p v-if="passwordError" class="text-red-500 text-sm">
+        <!-- Password Error -->
+        <p v-if="passwordError" class="text-red-500 text-sm mt-1">
           {{ passwordError }}
         </p>
 
