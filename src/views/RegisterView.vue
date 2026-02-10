@@ -39,9 +39,10 @@ const handleRegister = async () => {
     return;
   }
 
-  loading.value = true;
+  // Reset error setiap submit baru
   errorMessage.value = "";
   successMessage.value = "";
+  fieldErrors.value.username = "";
 
   try {
     const url = `${API_BASE_URL.replace(/\/$/, "")}/users/register`;
@@ -50,6 +51,7 @@ const handleRegister = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form.value),
     });
+
 
     const data = await response.json().catch(() => ({}));
 
@@ -123,11 +125,12 @@ const handleRegister = async () => {
           v-model="form.password"
           type="password"
           placeholder="Kata Sandi"
+          required
           class="w-full border border-gray-300 rounded-lg px-4 py-2 
                 focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
-
-        <p v-if="passwordError" class="text-red-500 text-sm">
+        <!-- Password Error -->
+        <p v-if="passwordError" class="text-red-500 text-sm mt-1">
           {{ passwordError }}
         </p>
 
