@@ -70,7 +70,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { emitAuthChange } from "../utils/auth.js"; // <-- IMPORTANT"
+import { emitAuthChange } from "../main.js"; // <-- IMPORTANT"
 const router = useRouter();
 
 const form = ref({
