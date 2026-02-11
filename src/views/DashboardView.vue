@@ -1,82 +1,75 @@
+<script setup>
+import cameraIcon from '@/assets/icons/camera.jpg'
+import historyIcon from '@/assets/icons/histroy.jpg'
+</script>
+
+
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col items-center px-4 py-10">
-    <div
-      class="grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-6xl mx-auto justify-items-center"
-    >
-      <!-- Card 1: Deteksi -->
+  <div class="max-w-5xl mx-auto px-6 py-12">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+      <!-- Card 1 -->
       <div
-        class="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center text-center transition-transform hover:scale-105 w-80"
+        class="bg-white rounded-2xl p-10 text-center shadow-md
+               transition-all duration-500
+               hover:-translate-y-2 hover:shadow-xl"
       >
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
+        <h3 class="text-xl font-semibold mb-4">
           Deteksi
         </h3>
+
         <p class="text-gray-500 mb-6">
           Scan foto untuk rekomendasi panen
         </p>
 
         <img
-          src="../assets/icons/camera.jpg"
+          :src="cameraIcon"
           alt="camera"
-          class="w-24 h-24 mb-6"
-        >
+          class="w-24 h-24 mx-auto mb-6 object-contain"
+        />
 
         <RouterLink
           to="/detection"
-          class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          class="inline-block bg-green-600 hover:bg-green-700
+                 text-white font-semibold py-3 px-6
+                 rounded-xl transition-all duration-300"
         >
           Mulai Deteksi
         </RouterLink>
       </div>
 
-      <!-- Card 2: Harga Pasar -->
+      <!-- Card 2 -->
       <div
-        class="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center text-center transition-transform hover:scale-105 w-80"
+        class="bg-white rounded-2xl p-10 text-center shadow-md
+               transition-all duration-500
+               hover:-translate-y-2 hover:shadow-xl"
       >
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
-          Harga Pasar TBS
-        </h3>
-        <p class="text-gray-500 mb-6">
-          Pantau harga tandan buah segar
-        </p>
-
-        <img
-          src="#"
-          alt="price"
-          class="w-24 h-24 mb-6"
-        >
-
-        <RouterLink
-          to="#"
-          class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-        >
-          Lihat Harga
-        </RouterLink>
-      </div>
-
-      <!-- Card 3: Histori -->
-      <div
-        class="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center text-center transition-transform hover:scale-105 w-80"
-      >
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
+        <h3 class="text-xl font-semibold mb-4">
           Histori
         </h3>
+
         <p class="text-gray-500 mb-6">
           Catatan scan
         </p>
 
         <img
-          src="../assets/icons/histroy.jpg"
+          :src="historyIcon"
           alt="history"
-          class="w-24 h-24 mb-6"
-        >
+          class="w-24 h-24 mx-auto mb-6 object-contain"
+        />
 
         <RouterLink
           to="/history"
-          class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          class="inline-block bg-green-600 hover:bg-green-700
+                 text-white font-semibold py-3 px-6
+                 rounded-xl transition-all duration-300"
         >
           Lihat
         </RouterLink>
       </div>
+
     </div>
+
   </div>
 </template>
