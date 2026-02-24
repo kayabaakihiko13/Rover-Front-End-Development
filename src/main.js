@@ -52,7 +52,11 @@ export const useAuth = () => ({
 // ROUTES
 // -----------------------------
 const routes = [
-    { path: "/", component: HomeView },
+    {
+        path: "/",
+        component: HomeView,
+        meta: { guestOnly: true }
+    },
 
     { path: "/register", component: RegisterView, meta: { guestOnly: true } },
     { path: "/login", component: LoginView, meta: { guestOnly: true } },
@@ -101,8 +105,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const loggedIn = !!localStorage.getItem("token");
-
+    syncAuth();
     if (to.meta.requiresAuth && !loggedIn) return next("/login");
     if (to.meta.guestOnly && loggedIn) return next("/dashboard");
 
