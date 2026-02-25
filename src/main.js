@@ -104,10 +104,16 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
     syncAuth();
-    if (to.meta.requiresAuth && !loggedIn) return next("/login");
-    if (to.meta.guestOnly && loggedIn) return next("/dashboard");
+
+    if (to.meta.requiresAuth && !isLoggedIn.value) {
+        return next("/login");
+    }
+
+    if (to.meta.guestOnly && isLoggedIn.value) {
+        return next("/dashboard");
+    }
 
     next();
 });
