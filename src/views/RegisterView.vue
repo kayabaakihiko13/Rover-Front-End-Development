@@ -78,103 +78,181 @@ const handleRegister = async () => {
 
 
 <template>
-  <div class="min-h-screen flex justify-center items-center p-4">
-    <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
+  <div class="min-h-screen flex bg-gradient-to-br from-green-50 to-emerald-100">
 
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
-        Daftar Akun
-      </h2>
-
-      <form @submit.prevent="handleRegister" class="space-y-4">
-
-        <input 
-          v-model="form.firstname"
-          type="text"
-          placeholder="Nama Depan"
-          required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2
-                focus:border-green-500
-                focus-visible:ring-2 focus-visible:ring-green-300
-                focus:outline-none"
-        />
-
-        <input 
-          v-model="form.lastname"
-          type="text"
-          placeholder="Nama Belakang"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2
-                focus:border-green-500
-                focus-visible:ring-2 focus-visible:ring-green-300
-                focus:outline-none"
-        />
-
-        <input 
-          v-model="form.username"
-          type="text"
-          placeholder="Username"
-          required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2
-                focus:border-green-500
-                focus-visible:ring-2 focus-visible:ring-green-300
-                focus:outline-none"
-        />
-        <input 
-          v-model="form.email"
-          type="email"
-          placeholder="Email"
-          required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2
-                focus:border-green-500
-                focus-visible:ring-2 focus-visible:ring-green-300
-                focus:outline-none"
-        />
-
-        <input 
-          v-model="form.password"
-          type="password"
-          placeholder="Kata Sandi"
-          required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2
-                focus:border-green-500
-                focus-visible:ring-2 focus-visible:ring-green-300
-                focus:outline-none"
-        />
-        <!-- Password Error -->
-        <p v-if="passwordError" class="text-red-500 text-sm mt-1">
-          {{ passwordError }}
+    <!-- LEFT SIDE (Branding Section) -->
+    <div class="hidden lg:flex w-1/2 bg-green-700 text-white p-12 flex-col justify-between">
+      <div>
+        <h1 class="text-4xl font-bold mb-4">
+          AI Fruit Detection
+        </h1>
+        <p class="text-green-100 text-lg leading-relaxed">
+          Sistem cerdas untuk mendeteksi tingkat kematangan buah
+          secara otomatis menggunakan teknologi Artificial Intelligence.
         </p>
+      </div>
 
-        <!-- ERROR -->
-        <p v-if="errorMessage" class="text-red-500 text-sm text-center">
-          {{ errorMessage }}
-        </p>
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+            🤖
+          </div>
+          <p>Deteksi otomatis & akurat</p>
+        </div>
 
-        <!-- SUCCESS -->
-        <p v-if="successMessage" class="text-green-600 text-sm text-center">
-          {{ successMessage }}
-        </p>
-        <p v-if="fieldErrors.username" class="text-red-500 text-sm">
-        {{ fieldErrors.username }}
-        </p>
-        <button 
-          type="submit"
-          class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition disabled:opacity-60"
-          :disabled="loading"
-        >
-          {{ loading ? "Memproses..." : "Daftar" }}
-        </button>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+            📊
+          </div>
+          <p>Rekap & analisis hasil deteksi</p>
+        </div>
 
-      </form>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+            ⚡
+          </div>
+          <p>Proses cepat & efisien</p>
+        </div>
+      </div>
 
-      <p class="text-sm text-center text-gray-600 mt-4">
-        Sudah punya akun?
-        <RouterLink 
-          to="/login"
-          class="text-green-700 font-medium hover:underline">
-          Masuk disini
-        </RouterLink>
+      <p class="text-sm text-green-200">
+        © 2026 AI Detection System
       </p>
+    </div>
 
+    <!-- RIGHT SIDE (Register Form) -->
+    <div class="flex flex-1 items-center justify-center p-6">
+      <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
+
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800">
+            Buat Akun
+          </h2>
+          <p class="text-gray-500 text-sm mt-2">
+            Daftar untuk mulai menggunakan sistem
+          </p>
+        </div>
+
+        <form @submit.prevent="handleRegister" class="space-y-5">
+
+          <!-- First & Last Name -->
+          <div class="grid grid-cols-2 gap-4">
+            <input
+              v-model="form.firstname"
+              type="text"
+              placeholder="Nama Depan"
+              required
+              class="input-modern"
+            />
+
+            <input
+              v-model="form.lastname"
+              type="text"
+              placeholder="Nama Belakang"
+              class="input-modern"
+            />
+          </div>
+
+          <!-- Username -->
+          <div>
+            <input
+              v-model="form.username"
+              type="text"
+              placeholder="Username"
+              required
+              class="input-modern"
+            />
+            <p v-if="fieldErrors.username" class="error-text">
+              {{ fieldErrors.username }}
+            </p>
+          </div>
+
+          <!-- Email -->
+          <input
+            v-model="form.email"
+            type="email"
+            placeholder="Email"
+            required
+            class="input-modern"
+          />
+
+          <!-- Password -->
+          <div>
+            <input
+              v-model="form.password"
+              type="password"
+              placeholder="Password (min 10 karakter)"
+              required
+              class="input-modern"
+            />
+            <p v-if="passwordError" class="error-text">
+              {{ passwordError }}
+            </p>
+          </div>
+
+          <!-- Global Error -->
+          <p v-if="errorMessage" class="error-text text-center">
+            {{ errorMessage }}
+          </p>
+
+          <!-- Success -->
+          <p v-if="successMessage" class="success-text text-center">
+            {{ successMessage }}
+          </p>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full bg-green-700 hover:bg-green-800 text-white py-3 rounded-xl font-semibold transition shadow-md disabled:opacity-60"
+          >
+            {{ loading ? "Memproses..." : "Daftar Sekarang" }}
+          </button>
+
+        </form>
+
+        <!-- Login Link -->
+        <p class="text-sm text-center text-gray-600 mt-6">
+          Sudah punya akun?
+          <RouterLink
+            to="/login"
+            class="text-green-700 font-semibold hover:underline"
+          >
+            Masuk
+          </RouterLink>
+        </p>
+
+      </div>
     </div>
   </div>
 </template>
+
+
+<style scoped>
+.input-modern {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.input-modern:focus {
+  outline: none;
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.2);
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.success-text {
+  color: #16a34a;
+  font-size: 13px;
+  margin-top: 6px;
+}
+</style>

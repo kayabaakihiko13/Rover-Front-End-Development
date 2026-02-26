@@ -1,3 +1,61 @@
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { emitAuthChange } from "../main.js"; // <-- IMPORTANT"
+const router = useRouter();
+
+const form = ref({
+  username: "",
+  password: "",
+});
+
+const isSubmitting = ref(false);
+const errorMessage = ref("");
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+const handleLogin = async () => {
+  isSubmitting.value = true;
+  errorMessage.value = "";
+
+  try {
+    // Hapus slash terakhir jika ada
+    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/login`;
+
+    const body = new URLSearchParams();
+    body.append("username", form.value.username);
+    body.append("password", form.value.password);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      errorMessage.value = data.detail || "Login gagal.";
+      isSubmitting.value = false;
+      return;
+    }
+
+    // SAVE TOKEN + USER
+    localStorage.setItem("token", data.access_token);
+    localStorage.setItem("username", form.value.username);
+
+    // NOTIFY APP (Header.vue auto update)
+    emitAuthChange();
+
+    router.push("/dashboard");
+  } catch (err) {
+    errorMessage.value = "Kesalahan jaringan.";
+  }
+
+  isSubmitting.value = false;
+};
+</script>
+
 <template>
   <div class="min-h-screen flex justify-center items-center p-4 bg-gray-50">
     <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
@@ -67,60 +125,4 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { emitAuthChange } from "../main.js"; // <-- IMPORTANT"
-const router = useRouter();
 
-const form = ref({
-  username: "",
-  password: "",
-});
-
-const isSubmitting = ref(false);
-const errorMessage = ref("");
-
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-const handleLogin = async () => {
-  isSubmitting.value = true;
-  errorMessage.value = "";
-
-  try {
-    // Hapus slash terakhir jika ada
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/login`;
-
-    const body = new URLSearchParams();
-    body.append("username", form.value.username);
-    body.append("password", form.value.password);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      errorMessage.value = data.detail || "Login gagal.";
-      isSubmitting.value = false;
-      return;
-    }
-
-    // SAVE TOKEN + USER
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("username", form.value.username);
-
-    // NOTIFY APP (Header.vue auto update)
-    emitAuthChange();
-
-    router.push("/dashboard");
-  } catch (err) {
-    errorMessage.value = "Kesalahan jaringan.";
-  }
-
-  isSubmitting.value = false;
-};
-</script>
