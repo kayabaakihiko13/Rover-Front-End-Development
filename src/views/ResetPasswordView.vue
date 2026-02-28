@@ -5,8 +5,12 @@ import { useRoute, useRouter } from "vue-router";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const route = useRoute();
 const router = useRouter();
-const newPassword = ref("");
-const confirmPassword = ref("");
+
+const form = {
+  newpassword:"",
+  confirmpassword:""
+}
+
 const loading = ref(false);
 const error = ref("");
 const message = ref("");
@@ -21,8 +25,8 @@ const passwordError = computed(()=>{
 const isFormValid = computed(()=>{
   return (
     !passwordError.value &&
-    newPassword.value === confirmPassword.value &&
-    newPassword.value.length > 0
+    form.newpassword.value === form.confirmpassword.value &&
+    form.newpassword.value.length > 0
   );
 })
 
@@ -46,8 +50,8 @@ const handleReset = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token,
-          new_password: newPassword.value,
-          confirm_password: confirmPassword.value,
+          new_password: form.newpassword.value,
+          confirm_password: form.confirmpassword.value,
         }),
       }
     );
