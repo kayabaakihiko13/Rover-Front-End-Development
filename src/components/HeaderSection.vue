@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { emitAuthChange, useAuth} from "../main.js";
+import { useAuth, emitAuthChange } from "@/composables/useAuth";
 
 const router = useRouter();
-const route = useRoute(); // Tambahkan ini
+const route = useRoute();
 const open = ref(false);
-const { username, isLoggedIn, syncAuth } = useAuth();
+const { username, isLoggedIn, syncAuth, logout: authLogout } = useAuth();
 
 // Cek apakah sedang di halaman home/landing
 const isLandingPage = computed(() => {
@@ -29,12 +29,10 @@ onBeforeUnmount(() => {
   window.removeEventListener("storage", refreshUser);
 });
 
-// Logout function
 const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username"); 
   emitAuthChange();
-  syncAuth();
   router.replace("/login");
 };
 

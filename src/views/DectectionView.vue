@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { API_BASE_URL } from "../main.js";
+import { postsApi, getImageUrl } from "@/services/api";
+import { useDetectionResult } from "@/composables/useDetectionResult";
 
 const router = useRouter();
+const { setResult } = useDetectionResult();
 const file = ref(null);
 const previewUrl = ref(null);
 const isSubmitting = ref(false);
@@ -133,36 +135,15 @@ const handleSubmit = async () => {
     return;
   }
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    errorMessage.value = "Anda harus login terlebih dahulu.";
-    return;
-  }
-
   isSubmitting.value = true;
   errorMessage.value = "";
 
   try {
-    const formData = new FormData();
-    formData.append("file", file.value);
-
-    const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/posts/`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      errorMessage.value = data.detail || "Deteksi gagal.";
-      return;
-    }
+    const response = await postsApi.upload(file.value);
+    const data = response.data;
 
     const image_path = data.image_url;
-    const cleanBase = API_BASE_URL.replace(/\/+$/, "");
-    const cleanPath = image_path.replaceAll("\\", "/").replace(/^\/+/, "");
-    const imageUrl = `${cleanBase}/${cleanPath}`;
+    const imageUrl = getImageUrl(image_path);
 
     const predictData = data.result?.predict || {};
     
@@ -171,20 +152,19 @@ const handleSubmit = async () => {
       0
     );
 
-    router.push({
-      name: "result-detection",
-      query: {
-        imageUrl: encodeURIComponent(imageUrl),
-        image_path: encodeURIComponent(image_path),
-        predict: encodeURIComponent(JSON.stringify(predictData)),
-        classLabels: encodeURIComponent(JSON.stringify(Object.keys(predictData))),
-        classCount: totalObjects,
-      },
+    setResult({
+      imageUrl,
+      image_path,
+      predict: predictData,
+      classLabels: Object.keys(predictData),
+      classCount: totalObjects,
     });
+
+    router.push({ name: "result-detection" });
     
   } catch (err) {
     console.error(err);
-    errorMessage.value = "Kesalahan jaringan. Silakan coba lagi.";
+    errorMessage.value = err.response?.data?.detail || "Kesalahan jaringan. Silakan coba lagi.";
   } finally {
     isSubmitting.value = false;
   }

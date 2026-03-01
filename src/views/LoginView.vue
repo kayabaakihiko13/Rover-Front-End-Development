@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { emitAuthChange } from "../main.js"; // <-- IMPORTANT"
+import { authApi } from "@/services/api";
+import { emitAuthChange } from "@/composables/useAuth";
+
 const router = useRouter();
 
 const form = ref({
@@ -12,47 +14,25 @@ const form = ref({
 const isSubmitting = ref(false);
 const errorMessage = ref("");
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
 const handleLogin = async () => {
   isSubmitting.value = true;
   errorMessage.value = "";
 
   try {
-    // Hapus slash terakhir jika ada
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/login`;
+    const response = await authApi.login(form.value.username, form.value.password);
+    const data = response.data;
 
-    const body = new URLSearchParams();
-    body.append("username", form.value.username);
-    body.append("password", form.value.password);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      errorMessage.value = data.detail || "Login gagal.";
-      isSubmitting.value = false;
-      return;
-    }
-
-    // SAVE TOKEN + USER
     localStorage.setItem("token", data.access_token);
     localStorage.setItem("username", form.value.username);
 
-    // NOTIFY APP (Header.vue auto update)
     emitAuthChange();
 
     router.push("/dashboard");
   } catch (err) {
-    errorMessage.value = "Kesalahan jaringan.";
+    errorMessage.value = err.response?.data?.detail || "Login gagal.";
+  } finally {
+    isSubmitting.value = false;
   }
-
-  isSubmitting.value = false;
 };
 </script>
 
