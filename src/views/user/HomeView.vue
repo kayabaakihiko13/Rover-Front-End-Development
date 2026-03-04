@@ -15,7 +15,7 @@ import {
   Leaf
 } from "lucide-vue-next";
 
-import Footer from "../components/FooterSection.vue"
+import Footer from "@/components/user/UserFooter.vue"
 
 const openFaq = ref(null);
 

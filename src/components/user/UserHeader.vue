@@ -8,23 +8,19 @@ const route = useRoute();
 const open = ref(false);
 const { username, isLoggedIn, syncAuth, logout: authLogout } = useAuth();
 
-// Cek apakah sedang di halaman home/landing
 const isLandingPage = computed(() => {
   return route.path === '/' && !username.value;
 });
 
-// Fungsi untuk ambil username terbaru dari localStorage
 const refreshUser = () => {
   username.value = localStorage.getItem("username");
 };
 
-// panggil saat component dimount
 onMounted(() => {
   refreshUser();
   window.addEventListener("storage", refreshUser);
 });
 
-// cleanup event listener saat component di-unmount
 onBeforeUnmount(() => {
   window.removeEventListener("storage", refreshUser);
 });
@@ -36,12 +32,10 @@ const logout = () => {
   router.replace("/login");
 };
 
-// Tutup mobile menu saat klik link
 const closeMobileMenu = () => {
   open.value = false;
 };
 
-// Smooth scroll ke section
 const scrollToSection = (sectionId) => {
   closeMobileMenu();
   if (router.currentRoute.value.path === '/') {
@@ -63,19 +57,16 @@ const scrollToSection = (sectionId) => {
 </script>
 
 <template>
-  <!-- HEADER FIXED dengan z-index tinggi -->
   <nav class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <!-- Logo -->
         <div class="flex-shrink-0 flex items-center">
           <router-link :to="username ? '/dashboard' : '/'" class="flex items-center">
-            <img class="w-10 h-10 rounded-lg shadow-sm" src="../assets/icons/logo.png" alt="PalmDetector Logo" />
+            <img class="w-10 h-10 rounded-lg shadow-sm" src="@/assets/icons/logo.png" alt="PalmDetector Logo" />
             <span class="ml-2 font-bold text-green-700 text-xl tracking-wide">PalmDetector</span>
           </router-link>
         </div>
 
-        <!-- Desktop Navigation Menu - HANYA MUNCUL DI LANDING PAGE -->
         <div v-if="isLandingPage" class="hidden md:flex items-center space-x-8">
           <button @click="scrollToSection('features')" class="text-gray-600 hover:text-green-700 font-medium transition-colors">
             Fitur
@@ -91,7 +82,6 @@ const scrollToSection = (sectionId) => {
           </button>
         </div>
 
-        <!-- Desktop Auth Buttons -->
         <div class="hidden md:flex items-center space-x-4">
           <div v-if="username" class="flex items-center space-x-4">
             <span class="text-gray-700 font-medium">Hi, {{ username }}</span>
@@ -106,7 +96,6 @@ const scrollToSection = (sectionId) => {
           </div>
         </div>
 
-        <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center">
           <button 
             @click="open = !open" 
@@ -134,13 +123,11 @@ const scrollToSection = (sectionId) => {
       </div>
     </div>
 
-    <!-- Mobile Menu Dropdown -->
     <div 
       v-show="open" 
       class="md:hidden bg-white border-t border-gray-200 shadow-lg"
     >
       <div class="px-4 pt-2 pb-4 space-y-1">
-        <!-- Mobile Navigation Links - HANYA MUNCUL DI LANDING PAGE -->
         <template v-if="isLandingPage">
           <button 
             @click="scrollToSection('features')" 
@@ -170,7 +157,6 @@ const scrollToSection = (sectionId) => {
           <div class="border-t border-gray-200 my-2"></div>
         </template>
         
-        <!-- Mobile Auth Buttons -->
         <div v-if="username">
           <div class="px-3 py-2 text-gray-700 font-medium bg-gray-50 rounded">
             Hi, {{ username }}
@@ -202,6 +188,5 @@ const scrollToSection = (sectionId) => {
     </div>
   </nav>
   
-  <!-- Spacer untuk kompensasi fixed header -->
   <div class="h-16"></div>
 </template>
