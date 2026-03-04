@@ -1,24 +1,20 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import Sortable from "sortablejs";
+import { api } from "@/services/api";
+import { useDetectionResult } from "@/composables/useDetectionResult";
 
 const classOptions = [
   "mentah", "setangah_matang", "Matang",
   "terlalu_matang", "abnormal", "kosong",
 ];
 
-const route = useRoute();
 const router = useRouter();
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const { detectionResult: result, clearResult } = useDetectionResult();
 
-const imageUrl = computed(() =>
-  route.query.imageUrl ? decodeURIComponent(route.query.imageUrl) : ""
-);
-
-const image_path = computed(() =>
-  route.query.image_path ? decodeURIComponent(route.query.image_path) : ""
-);
+const imageUrl = computed(() => result.value?.imageUrl || "");
+const image_path = computed(() => result.value?.image_path || "");
 
 const formatLabel = (label) => {
   return label
@@ -30,37 +26,14 @@ const formatLabel = (label) => {
 };
 
 const predictData = computed(() => {
-  if (route.query.predict) {
-    try {
-      const parsed = JSON.parse(decodeURIComponent(route.query.predict));
-      if (parsed && typeof parsed === 'object') {
-        return parsed;
-      }
-    } catch (e) {
-      console.error("Gagal parse predict:", e);
-    }
+  if (result.value?.predict) {
+    return result.value.predict;
   }
-  
-  if (route.query.classLabels) {
-    try {
-      const labels = JSON.parse(decodeURIComponent(route.query.classLabels));
-      if (Array.isArray(labels)) {
-        const countMap = {};
-        labels.forEach(lbl => {
-          countMap[lbl] = (countMap[lbl] || 0) + 1;
-        });
-        return countMap;
-      }
-    } catch (e) {
-      console.error("Gagal parse classLabels:", e);
-    }
-  }
-  
   return {};
 });
 
 const classCount = computed(() => {
-  return Object.values(predictData.value).reduce(
+  return result.value?.classCount || Object.values(predictData.value).reduce(
     (sum, count) => sum + (Number(count) || 0),
     0
   );
@@ -149,21 +122,9 @@ const saveResult = async () => {
       formData.append(`counter_${i + 1}`, String(row.count));
     });
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Token tidak ditemukan. Silakan login ulang.");
-    }
-
-    const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/posts/simpan-edit`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
+    await api.post("/posts/simpan-edit", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Error ${response.status}: ${errText}`);
-    }
 
     showSuccess.value = true;
     setTimeout(() => {
@@ -171,7 +132,7 @@ const saveResult = async () => {
     }, 2000);
   } catch (err) {
     console.error("Error saat menyimpan:", err);
-    errorMessage.value = err.message || "Terjadi kesalahan saat menyimpan.";
+    errorMessage.value = err.response?.data?.detail || "Terjadi kesalahan saat menyimpan.";
   } finally {
     isSaving.value = false;
   }

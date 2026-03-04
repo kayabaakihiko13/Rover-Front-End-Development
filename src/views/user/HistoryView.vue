@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { postsApi, getImageUrl } from '@/services/api'
 
 const router = useRouter()
 
@@ -11,38 +12,16 @@ const searchQuery = ref('')
 const showDeleteConfirm = ref(false)
 const postToDelete = ref(null)
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
-
-const getImageUrl = (path) => {
-  if (!path) return '/placeholder-image.jpg'
-  const base = API_BASE_URL.replace(/\/+$/, "")
-  const cleanPath = path.replace(/^\/+/, "")
-  return `${base}/${cleanPath}`
-}
-
 const fetchHistory = async () => {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    router.push('/login')
-    return
-  }
-
   try {
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/posts/history`;
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}))
-      throw new Error(errData.detail || 'Gagal memuat histori')
-    }
-
-    const data = await response.json()
-    posts.value = data
+    const response = await postsApi.getHistory()
+    posts.value = response.data
   } catch (err) {
     console.error('Error fetching history:', err)
-    error.value = err.message
+    error.value = err.response?.data?.detail || 'Gagal memuat histori'
+    if (err.response?.status === 401) {
+      router.push('/login')
+    }
   } finally {
     loading.value = false
   }
@@ -107,29 +86,16 @@ const filteredPosts = computed(() => {
 
 const deletePost = async () => {
   if (!postToDelete.value) return
-  
-  const token = localStorage.getItem('token')
-  if (!token) return
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL.replace(/\/$/, "")}/posts/${postToDelete.value.post_id}`,
-      {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error('Gagal menghapus data')
-    }
+    await postsApi.deletePost(postToDelete.value.post_id)
 
     posts.value = posts.value.filter(p => p.post_id !== postToDelete.value.post_id)
     showDeleteConfirm.value = false
     postToDelete.value = null
   } catch (err) {
     console.error('Error deleting post:', err)
-    error.value = err.message
+    error.value = err.response?.data?.detail || 'Gagal menghapus data'
   }
 }
 
