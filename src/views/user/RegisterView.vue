@@ -1,6 +1,7 @@
 <script setup>
-import { ref,computed} from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
 
@@ -15,7 +16,7 @@ const form = ref({
 const loading = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
-// mencegah password nya kurang dari 10 karakter
+
 const passwordError = computed(() => {
   if (!form.value.password) return "";
   if (form.value.password.length < 10) {
@@ -23,13 +24,10 @@ const passwordError = computed(() => {
   }
   return "";
 });
-// handle usernameDouble
+
 const fieldErrors = ref({
   username: "",
 });
-
-fieldErrors.value.username = "";
-errorMessage.value = "";
 
 const handleRegister = async () => {
   if (loading.value) return;
@@ -39,7 +37,6 @@ const handleRegister = async () => {
     return;
   }
 
-  // Reset error setiap submit baru
   errorMessage.value = "";
   successMessage.value = "";
   fieldErrors.value.username = "";
@@ -52,11 +49,10 @@ const handleRegister = async () => {
       body: JSON.stringify(form.value),
     });
 
-
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      if(response.status == 400 && data.detail?.toLowerCase().includes("username")){
+      if (response.status === 400 && data.detail?.toLowerCase().includes("username")) {
         fieldErrors.value.username = data.detail;
         return;
       }
@@ -73,12 +69,10 @@ const handleRegister = async () => {
     loading.value = false;
   }
 };
-
 </script>
 
-
 <template>
-  <div class="min-h-screen flex bg-gradient-to-br from-green-50 to-emerald-100">
+  <div class="min-h-screen flex bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800">
 
     <!-- LEFT SIDE (Branding Section) -->
     <div class="hidden lg:flex w-1/2 bg-green-700 text-white p-12 flex-col justify-between">
@@ -122,13 +116,13 @@ const handleRegister = async () => {
 
     <!-- RIGHT SIDE (Register Form) -->
     <div class="flex flex-1 items-center justify-center p-6">
-      <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
+      <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700">
 
         <div class="text-center mb-8">
-          <h2 class="text-3xl font-bold text-gray-800">
+          <h2 class="text-3xl font-bold text-gray-800 dark:text-white">
             Buat Akun
           </h2>
-          <p class="text-gray-500 text-sm mt-2">
+          <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">
             Daftar untuk mulai menggunakan sistem
           </p>
         </div>
@@ -142,14 +136,13 @@ const handleRegister = async () => {
               type="text"
               placeholder="Nama Depan"
               required
-              class="input-modern"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
             />
-
             <input
               v-model="form.lastname"
               type="text"
               placeholder="Nama Belakang"
-              class="input-modern"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
             />
           </div>
 
@@ -160,7 +153,7 @@ const handleRegister = async () => {
               type="text"
               placeholder="Username"
               required
-              class="input-modern"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
             />
             <p v-if="fieldErrors.username" class="error-text">
               {{ fieldErrors.username }}
@@ -173,7 +166,7 @@ const handleRegister = async () => {
             type="email"
             placeholder="Email"
             required
-            class="input-modern"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
           />
 
           <!-- Password -->
@@ -183,7 +176,7 @@ const handleRegister = async () => {
               type="password"
               placeholder="Password (min 10 karakter)"
               required
-              class="input-modern"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
             />
             <p v-if="passwordError" class="error-text">
               {{ passwordError }}
@@ -212,11 +205,11 @@ const handleRegister = async () => {
         </form>
 
         <!-- Login Link -->
-        <p class="text-sm text-center text-gray-600 mt-6">
+        <p class="text-sm text-center text-gray-600 dark:text-gray-400 mt-6">
           Sudah punya akun?
           <RouterLink
             to="/login"
-            class="text-green-700 font-semibold hover:underline"
+            class="text-green-700 dark:text-green-400 font-semibold hover:underline"
           >
             Masuk
           </RouterLink>
@@ -227,23 +220,8 @@ const handleRegister = async () => {
   </div>
 </template>
 
-
 <style scoped>
-.input-modern {
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.input-modern:focus {
-  outline: none;
-  border-color: #15803d;
-  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.2);
-}
-
+/* Hanya custom CSS, tidak ada @apply */
 .error-text {
   color: #dc2626;
   font-size: 13px;

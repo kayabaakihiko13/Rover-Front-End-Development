@@ -151,43 +151,44 @@ const totalByCategory = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 px-4 py-6">
+  <!-- Root: TANPA transition-colors untuk instant theme switch -->
+  <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-6">
     <div class="max-w-5xl mx-auto space-y-6">
       
       <!-- Success Overlay -->
-      <div v-if="showSuccess" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl p-8 text-center max-w-sm w-full">
-          <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-if="showSuccess" class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 text-center max-w-sm w-full border border-gray-100 dark:border-gray-700">
+          <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h3 class="text-2xl font-bold text-gray-800 mb-2">Berhasil!</h3>
-          <p class="text-gray-600">Data sedang disimpan...</p>
+          <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Berhasil!</h3>
+          <p class="text-gray-600 dark:text-gray-300">Data sedang disimpan...</p>
         </div>
       </div>
 
       <!-- Header -->
       <div class="text-center space-y-2">
-        <h1 class="text-3xl font-bold text-gray-800">Hasil Deteksi</h1>
-        <p class="text-gray-600">Periksa dan edit hasil deteksi AI</p>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Hasil Deteksi</h1>
+        <p class="text-gray-600 dark:text-gray-300">Periksa dan edit hasil deteksi AI</p>
       </div>
 
       <!-- Quick Stats -->
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-          <div class="text-3xl font-bold text-green-600">{{ classCount }}</div>
-          <div class="text-xs text-gray-500 mt-1">Total Objek</div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ classCount }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Objek</div>
         </div>
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-          <div class="text-3xl font-bold text-blue-600">{{ rows.length }}</div>
-          <div class="text-xs text-gray-500 mt-1">Kategori</div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ rows.length }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Kategori</div>
         </div>
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-          <div class="text-sm font-semibold text-gray-700 mb-2">Ringkasan</div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Ringkasan</div>
           <div class="flex flex-wrap gap-1">
             <span v-for="(count, label) in totalByCategory" :key="label" 
-                  class="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">
+                  class="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
               {{ formatLabel(label) }}: {{ count }}
             </span>
           </div>
@@ -195,38 +196,38 @@ const totalByCategory = computed(() => {
       </div>
 
       <!-- Image Container -->
-      <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
         <div class="relative">
           <img
             :src="imageUrl"
             alt="Hasil Deteksi"
-            class="w-full h-auto max-h-96 object-contain bg-gray-50"
+            class="w-full h-auto max-h-96 object-contain bg-gray-50 dark:bg-gray-900"
           />
-          <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 shadow-lg">
+          <div class="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 dark:text-gray-200 shadow-lg">
             📷 Gambar Hasil Deteksi
           </div>
         </div>
       </div>
 
       <!-- Error Message -->
-      <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center gap-3">
-        <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-if="errorMessage" class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 dark:border-red-400 p-4 rounded-r-xl flex items-center gap-3">
+        <svg class="w-5 h-5 text-red-500 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <p class="text-red-700 text-sm flex-1">{{ errorMessage }}</p>
-        <button @click="errorMessage = ''" class="text-red-500 hover:text-red-700">✕</button>
+        <p class="text-red-700 dark:text-red-300 text-sm flex-1">{{ errorMessage }}</p>
+        <button @click="errorMessage = ''" class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">✕</button>
       </div>
 
       <!-- Detection Results Card -->
-      <div class="bg-white rounded-3xl shadow-xl p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
-            <h2 class="text-xl font-bold text-gray-800">Daftar Objek Terdeteksi</h2>
-            <p class="text-sm text-gray-500 mt-1">Drag untuk mengurutkan, klik edit untuk mengubah</p>
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Daftar Objek Terdeteksi</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Drag untuk mengurutkan, klik edit untuk mengubah</p>
           </div>
           <button
             @click="addRow"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition font-semibold shadow-lg shadow-blue-200"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition font-semibold shadow-lg shadow-blue-200 dark:shadow-blue-900/20"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -240,13 +241,13 @@ const totalByCategory = computed(() => {
           <div
             v-for="(row, i) in rows"
             :key="i"
-            class="group bg-gray-50 rounded-2xl p-4 border-2 border-transparent hover:border-gray-200 transition-all"
-            :class="editingIndex === i ? 'ring-2 ring-blue-500 border-blue-300' : ''"
+            class="group bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-all"
+            :class="editingIndex === i ? 'ring-2 ring-blue-500 border-blue-300 dark:border-blue-600' : ''"
           >
             <div class="flex items-center gap-3">
               
               <!-- Drag Handle -->
-              <div class="drag-handle cursor-move text-gray-400 hover:text-gray-600 p-2">
+              <div class="drag-handle cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                 </svg>
@@ -256,18 +257,18 @@ const totalByCategory = computed(() => {
               <div class="flex-1 min-w-0">
                 <div v-if="editingIndex !== i" class="flex items-center gap-3">
                   <div class="flex-1 min-w-0">
-                    <div class="font-semibold text-gray-800 truncate">{{ formatLabel(row.label) }}</div>
-                    <div class="text-sm text-gray-500">Jumlah: <span class="font-bold text-gray-700">{{ row.count }}</span></div>
+                    <div class="font-semibold text-gray-800 dark:text-white truncate">{{ formatLabel(row.label) }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Jumlah: <span class="font-bold text-gray-700 dark:text-gray-200">{{ row.count }}</span></div>
                   </div>
                 </div>
 
                 <!-- Edit Mode -->
                 <div v-else class="space-y-3">
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Kematangan</label>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Jenis Kematangan</label>
                     <select
                       v-model="row.label"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     >
                       <option v-for="opt in classOptions" :key="opt" :value="opt">
                         {{ formatLabel(opt) }}
@@ -275,12 +276,12 @@ const totalByCategory = computed(() => {
                     </select>
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Jumlah</label>
                     <input
                       type="number"
                       v-model.number="row.count"
                       min="1"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     />
                   </div>
                 </div>
@@ -291,7 +292,7 @@ const totalByCategory = computed(() => {
                 <button
                   v-if="editingIndex !== i"
                   @click="editRow(i)"
-                  class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
                   title="Edit"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,7 +302,7 @@ const totalByCategory = computed(() => {
                 <button
                   v-else
                   @click="cancelEdit"
-                  class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                  class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
                   title="Batal"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,7 +311,7 @@ const totalByCategory = computed(() => {
                 </button>
                 <button
                   @click="removeRow(i)"
-                  class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                  class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
                   title="Hapus"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,23 +327,23 @@ const totalByCategory = computed(() => {
         <!-- Empty State -->
         <div v-if="rows.length === 0" class="text-center py-12">
           <div class="text-6xl mb-4">📭</div>
-          <p class="text-gray-500">Belum ada objek yang terdeteksi</p>
-          <button @click="addRow" class="mt-4 text-blue-600 font-semibold hover:underline">
+          <p class="text-gray-500 dark:text-gray-400">Belum ada objek yang terdeteksi</p>
+          <button @click="addRow" class="mt-4 text-blue-600 dark:text-blue-400 font-semibold hover:underline">
             Tambah objek pertama
           </button>
         </div>
 
         <!-- Options -->
-        <div class="mt-6 pt-6 border-t border-gray-200 space-y-4">
-          <label class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
+          <label class="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition">
             <input
               v-model="semuaBenar"
               type="checkbox"
-              class="mt-1 w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              class="mt-1 w-5 h-5 text-green-600 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 bg-white dark:bg-gray-700"
             />
             <div class="flex-1">
-              <div class="font-medium text-gray-800">✓ Semua hasil deteksi sudah benar</div>
-              <div class="text-sm text-gray-500 mt-1">Centang jika tidak perlu edit lagi</div>
+              <div class="font-medium text-gray-800 dark:text-white">✓ Semua hasil deteksi sudah benar</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Centang jika tidak perlu edit lagi</div>
             </div>
           </label>
         </div>
@@ -366,7 +367,7 @@ const totalByCategory = computed(() => {
           
           <router-link
             to="/detection"
-            class="block w-full text-center py-3 text-gray-600 font-medium hover:text-gray-800 transition"
+            class="block w-full text-center py-3 text-gray-600 dark:text-gray-400 font-medium hover:text-gray-800 dark:hover:text-gray-200 transition"
           >
             ← Kembali ke Upload
           </router-link>
