@@ -23,20 +23,17 @@ const handleLogin = async () => {
   try {
     const response = await authApi.login(form.value.username, form.value.password);
     const data = response.data;
-
     localStorage.setItem(STORAGE_KEYS.USER_TOKEN, data.access_token);
     localStorage.setItem(STORAGE_KEYS.USER_USERNAME, form.value.username);
-
-    emitAuthChange();
-
-    if (route.query.expired === 'true') {
-      alert("Session expired, silakan login kembali");
-      router.replace(ROUTES.DASHBOARD);
-    } else {
-      const redirectPath = route.query.redirect || ROUTES.DASHBOARD;
-      router.replace(redirectPath);
-    }
     
+    emitAuthChange();
+    
+    const wasExpired = sessionStorage.getItem('session_expired');
+    if (wasExpired) {
+      sessionStorage.removeItem('session_expired');
+    }
+    router.replace(ROUTES.DASHBOARD);
+  
   } catch (err) {
     errorMessage.value = err.response?.data?.detail || "Login gagal.";
   } finally {
