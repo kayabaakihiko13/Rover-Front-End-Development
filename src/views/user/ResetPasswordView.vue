@@ -73,54 +73,64 @@ const handleReset = async () => {
 </script>
  
 <template>
-  <div class="min-h-screen flex justify-center items-center p-4">
-    <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+  <div class="min-h-screen flex justify-center items-center p-4 bg-gray-50 dark:bg-gray-900">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 w-full max-w-sm border border-gray-100 dark:border-gray-700">
+      
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6 text-center">
         Reset Kata Sandi
       </h2>
 
       <form @submit.prevent="handleReset" class="space-y-4">
 
+        <!-- New Password Input -->
         <input
-          v-model="newPassword"
+          v-model="form.newpassword"
           type="password"
-          placeholder="Kata Sandi Baru"
+          placeholder="Kata Sandi Baru (min. 10 karakter)"
           :minlength="10"
-          class="w-full border rounded-lg px-4 py-2
-                 focus-visible:ring-2 focus-visible:ring-green-500
-                 focus:outline-none"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
+                 bg-white dark:bg-gray-700 
+                 text-gray-900 dark:text-white 
+                 placeholder-gray-400 dark:placeholder-gray-500
+                 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
         />
 
+        <!-- Confirm Password Input -->
         <input
-          v-model="confirmPassword"
+          v-model="form.confirmpassword"
           type="password"
           placeholder="Konfirmasi Kata Sandi"
           :minlength="10"
-          class="w-full border rounded-lg px-4 py-2
-                 focus-visible:ring-2 focus-visible:ring-green-500
-                 focus:outline-none"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
+                 bg-white dark:bg-gray-700 
+                 text-gray-900 dark:text-white 
+                 placeholder-gray-400 dark:placeholder-gray-500
+                 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
         />
 
-        <p v-if="passwordError" class="text-red-500 text-sm">
+        <!-- Password Error -->
+        <p v-if="passwordError" class="text-red-600 dark:text-red-400 text-sm">
           {{ passwordError }}
         </p>
 
+        <!-- Submit Button -->
         <button
           type="submit"
           :disabled="!isFormValid || loading"
-          class="w-full bg-green-700 hover:bg-green-800
-                 disabled:bg-gray-400
-                 text-white py-2 rounded-lg transition"
+          class="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-400 dark:disabled:bg-gray-600
+                 text-white py-2 rounded-lg transition disabled:cursor-not-allowed"
         >
           {{ loading ? "Memproses..." : "Reset Kata Sandi" }}
         </button>
       </form>
 
-      <p v-if="message" class="text-green-600 mt-4 text-center">
+      <!-- Success Message -->
+      <p v-if="message" class="text-green-600 dark:text-green-400 mt-4 text-center text-sm font-medium">
         {{ message }}
       </p>
 
-      <p v-if="error" class="text-red-600 mt-4 text-center">
+      <!-- Error Message -->
+      <p v-if="error" class="text-red-600 dark:text-red-400 mt-4 text-center text-sm">
         {{ error }}
       </p>
     </div>

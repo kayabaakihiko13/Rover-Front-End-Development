@@ -37,31 +37,59 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex justify-center items-center p-4">
-    <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Lupa Kata Sandi</h2>
+  <!-- Root: TANPA transition-colors untuk instant theme switch -->
+  <div class="min-h-screen flex justify-center items-center p-4 bg-gray-50 dark:bg-gray-900">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 w-full max-w-sm border border-gray-100 dark:border-gray-700">
+      
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6 text-center">
+        Lupa Kata Sandi
+      </h2>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <input v-model="username" type="text" placeholder="Masukkan username" required
-               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
-        <button type="submit"
-                class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition">
-          Kirim Tautan Reset
+        
+        <!-- Input Username -->
+        <input 
+          v-model="username" 
+          type="text" 
+          placeholder="Masukkan username" 
+          required
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
+                 bg-white dark:bg-gray-700 
+                 text-gray-900 dark:text-white 
+                 placeholder-gray-400 dark:placeholder-gray-500
+                 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors" 
+        />
+        
+        <!-- Submit Button -->
+        <button 
+          type="submit"
+          :disabled="loading"
+          class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ loading ? 'Mengirim...' : 'Kirim Tautan Reset' }}
         </button>
       </form>
 
-      <p v-if="message" class="text-green-600 mt-4 text-center">{{ message }}</p>
-      <p v-if="error" class="text-red-600 mt-4 text-center">{{ error }}</p>
-      <p class="text-sm text-center text-gray-600 mt-4">
+      <!-- Success Message -->
+      <p v-if="message" class="text-green-600 dark:text-green-400 mt-4 text-center text-sm font-medium">
+        {{ message }}
+      </p>
+      
+      <!-- Error Message -->
+      <p v-if="error" class="text-red-600 dark:text-red-400 mt-4 text-center text-sm">
+        {{ error }}
+      </p>
+      
+      <!-- Back to Login Link -->
+      <p class="text-sm text-center text-gray-600 dark:text-gray-400 mt-6">
         Ingat kata sandi?
         <router-link
           to="/login"
-          class="text-green-700 font-medium hover:underline"
+          class="text-green-700 dark:text-green-400 font-medium hover:underline"
         >
           Masuk disini
         </router-link>
       </p>
     </div>
-    
   </div>
 </template>

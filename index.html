@@ -12,5 +12,27 @@
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
 </body>
+<script>
+  (function () {
+    try {
+      const saved = localStorage.getItem('theme') || 'system';
+      let isDark = false;
+
+      if (saved === 'dark') {
+        isDark = true;
+      } else if (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        isDark = true;
+      }
+
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {
+      console.warn('Theme init error:', e);
+    }
+  })();
+</script>
 
 </html>
