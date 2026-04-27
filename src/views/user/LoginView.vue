@@ -26,8 +26,6 @@ const handleLogin = async () => {
 
     localStorage.setItem(STORAGE_KEYS.USER_TOKEN, data.access_token);
     localStorage.setItem(STORAGE_KEYS.USER_USERNAME, form.value.username);
-    localStorage.setItem(STORAGE_KEYS.USER_TOKEN, data.access_token);
-    localStorage.setItem(STORAGE_KEYS.USER_USERNAME, form.value.username);
 
     emitAuthChange();
 
