@@ -84,24 +84,39 @@ const filteredPosts = computed(() => {
   })
 })
 
+// this for handle delete post
 const deletePost = async () => {
   if (!postToDelete.value) return
 
   try {
     await postsApi.deletePost(postToDelete.value.post_id)
 
+    // Hapus dari list secara lokal (optimistic update)
     posts.value = posts.value.filter(p => p.post_id !== postToDelete.value.post_id)
+    
+    // Reset modal
     showDeleteConfirm.value = false
     postToDelete.value = null
+    
   } catch (err) {
     console.error('Error deleting post:', err)
+    console.error('Response:', err.response?.data)
+    
     error.value = err.response?.data?.detail || 'Gagal menghapus data'
+    
+    // Auto hide error setelah 5 detik
+    setTimeout(() => { error.value = null }, 5000)
   }
 }
 
 const confirmDelete = (post) => {
   postToDelete.value = post
   showDeleteConfirm.value = true
+}
+
+const closeModal = () => {
+  showDeleteConfirm.value = false
+  postToDelete.value = null
 }
 
 onMounted(() => {
@@ -236,6 +251,7 @@ onMounted(() => {
                 @click="confirmDelete(post)"
                 class="px-4 py-2.5 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl transition"
                 title="Hapus"
+                aria-label="Hapus history"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -290,11 +306,11 @@ onMounted(() => {
               Hapus
             </button>
           </div>
-        </div>
-      </div>
+        </Transition>
+      </Teleport>
 
       <!-- Back Button -->
-      <div class="text-center pt-4">
+      <div class="text-center pt-4 pb-8">
         <router-link
           to="/dashboard"
           class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium transition"
@@ -333,5 +349,16 @@ onMounted(() => {
 
 button, a {
   min-height: 44px;
+}
+
+/* Modal animation */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
 }
 </style>
