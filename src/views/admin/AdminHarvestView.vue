@@ -105,19 +105,25 @@ const fetchHarvest = async () => {
     console.log("Response keys:", Object.keys(response));
     console.log("response.data:", response.data);
     
-    // Coba cek berbagai kemungkinan format response
+    let postsData = [];
     if (Array.isArray(response)) {
-      posts.value = response;
+      postsData = response;
     } else if (Array.isArray(response.data)) {
-      posts.value = response.data;
+      postsData = response.data;
     } else if (response.data?.data) {
-      posts.value = response.data.data;
+      postsData = response.data.data;
     } else if (response.data?.harvests) {
-      posts.value = response.data.harvests;
+      postsData = response.data.harvests;
     } else {
       console.warn("Unknown response format:", response);
-      posts.value = [];
+      postsData = [];
     }
+    
+    for (const post of postsData) {
+      post.imageBlobUrl = await getImageUrl(post.image_url);
+    }
+    
+    posts.value = postsData;
   } catch (err) {
     console.error("Harvest Error:", err);
     error.value = err.response?.data?.detail || err.message || "Gagal memuat data hasil panen";
@@ -211,7 +217,7 @@ onUnmounted(() => {
           <!-- Image -->
           <div class="relative h-48 bg-gray-50 overflow-hidden">
             <img
-              :src="getImageUrl(post.image_url)"
+              :src="post.imageBlobUrl || getImageUrl(post.image_url)"
               alt="Hasil Deteksi"
               class="w-full h-full object-contain p-4"
               @error="(e) => e.target.src = 'https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia'"
@@ -260,7 +266,7 @@ onUnmounted(() => {
             <!-- Actions -->
             <div class="flex gap-2 pt-2 border-t border-gray-100">
               <a
-                :href="getImageUrl(post.image_url)"
+                :href="post.imageBlobUrl || getImageUrl(post.image_url)"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl transition font-medium text-sm"

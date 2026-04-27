@@ -29,9 +29,9 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "0.0.0.0",
       port: port,
-      strictPort: true,        // Error handling jika port sudah terpakai
+      strictPort: true,
       watch: {
-        usePolling: true,      // Untuk Docker hot-reload
+        usePolling: true,
       },
     }
   }

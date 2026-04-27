@@ -137,7 +137,7 @@ const handleSubmit = async () => {
     const data = response.data;
 
     const image_path = data.image_url;
-    const imageUrl = getImageUrl(image_path);
+    const imageUrl = await getImageUrl(image_path);
 
     const predictData = data.result?.predict || {};
     
