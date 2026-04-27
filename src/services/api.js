@@ -1,6 +1,6 @@
 import axios from "axios";
-import { STORAGE_KEYS } from "@/constants";
-
+import { STORAGE_KEYS,ROUTES} from "@/constants";
+import router from "@/router";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
 
 const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
@@ -35,6 +35,15 @@ const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
           localStorage.removeItem(tokenKey);
           if (onUnauthorized) localStorage.removeItem(onUnauthorized);
           window.dispatchEvent(new Event(authEventName));
+          // redirect ke login kalau udah exp tokenya
+          if(tokenKey === STORAGE_KEYS.USER_TOKEN){
+            if (router.currentRoute.value.path !== ROUTES.LOGIN) {
+                router.push({ 
+                    path: ROUTES.LOGIN, 
+                    query: { expired: 'true', redirect: router.currentRoute.value.fullPath }
+                });
+            }
+          }
         } else {
           // Kalau gagal login, biarkan LoginView yang urus, jangan kirim event auth-changed
           console.warn("Kredensial salah, tapi bukan token expired.");
