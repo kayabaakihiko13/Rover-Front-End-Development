@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import UserHeader from "@/components/user/UserHeader.vue";
-import { ROUTES } from "@/constants";
+import { ROUTES, STORAGE_KEYS } from "@/constants";
 
 const route = useRoute();
 const router = useRouter();
@@ -14,49 +14,39 @@ const showUserHeader = computed(() => {
 
 // Helper: Show notification (ganti alert dengan yang lebih user-friendly)
 const showNotification = (message, type = "warning") => {
-  // Opsional: Gunakan toast library seperti vue-toastification
-  if (import.meta.env.DEV) {
-    console.warn(`[${type.toUpperCase()}] ${message}`);
-  }
+  // Notification only shown in dev mode with console.warn
 };
 
 // Handler untuk User Token Expired
 const handleUserAuthExpired = () => {
+  const hasToken = localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
+  if (hasToken) return;
   if (isRedirecting.value) return;
+  if (route.path === ROUTES.LOGIN) return;
+  
   isRedirecting.value = true;
   
   showNotification("Sesi Anda telah berakhir. Silakan login kembali.", "warning");
   
-  // Bersihkan storage user
-  localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
-  
-  // Redirect dengan delay kecil agar notifikasi terlihat
   setTimeout(() => {
-    if (route.path !== ROUTES.LOGIN) {
-      router.push(ROUTES.LOGIN);
-    }
     isRedirecting.value = false;
-  }, 800);
+  }, 1500);
 };
 
 // Handler untuk Admin Token Expired
 const handleAdminAuthExpired = () => {
+  const hasAdminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
+  if (hasAdminToken) return;
   if (isRedirecting.value) return;
+  if (route.path === ROUTES.ADMIN_LOGIN) return;
+  
   isRedirecting.value = true;
   
   showNotification("Sesi Admin telah berakhir.", "warning");
   
-  // Bersihkan storage admin
-  localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.ADMIN_USERNAME);
-  
   setTimeout(() => {
-    if (route.path !== ROUTES.ADMIN_LOGIN) {
-      router.push(ROUTES.ADMIN_LOGIN);
-    }
     isRedirecting.value = false;
-  }, 800);
+  }, 1500);
 };
 
 onMounted(() => {
