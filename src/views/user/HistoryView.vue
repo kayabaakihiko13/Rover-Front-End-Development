@@ -15,7 +15,13 @@ const postToDelete = ref(null)
 const fetchHistory = async () => {
   try {
     const response = await postsApi.getHistory()
-    posts.value = response.data
+    const postsData = response.data
+    
+    for (const post of postsData) {
+      post.imageBlobUrl = await getImageUrl(post.image_url)
+    }
+    
+    posts.value = postsData
   } catch (err) {
     console.error('Error fetching history:', err)
     error.value = err.response?.data?.detail || 'Gagal memuat histori'
@@ -198,7 +204,7 @@ onMounted(() => {
           <!-- Image -->
           <div class="relative h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden">
             <img
-              :src="getImageUrl(post.image_url)"
+              :src="post.imageBlobUrl || getImageUrl(post.image_url)"
               alt="Hasil Deteksi"
               class="w-full h-full object-contain p-4"
               @error="(e) => e.target.src = 'https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia'"
@@ -239,7 +245,7 @@ onMounted(() => {
             <!-- Actions -->
             <div class="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
               <a
-                :href="getImageUrl(post.image_url)"
+                :href="post.imageBlobUrl || getImageUrl(post.image_url)"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl transition font-medium text-sm"

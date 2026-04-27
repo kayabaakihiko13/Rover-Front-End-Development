@@ -97,10 +97,26 @@ export const postsApi = {
   deletePost: (postId) => api.delete(`/posts/${postId}`),
 };
 
-export const getImageUrl = (path) => {
+export const getImageUrl = async (path) => {
   if (!path) return "/placeholder-image.jpg";
+  
   const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/");
-  return `${API_BASE_URL}/${cleanPath}`;
+  const url = `${API_BASE_URL}/${cleanPath}`;
+  const token = localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
+
+  try {
+    const response = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+
+    if (!response.ok) throw new Error("Fetch failed");
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.error("Image Error:", error);
+    return "/placeholder-image.jpg";
+  }
 };
 
 // ========== Admin API Services ==========
