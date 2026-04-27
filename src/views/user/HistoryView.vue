@@ -125,30 +125,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 px-4 py-6">
+  <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-6">
     <div class="max-w-6xl mx-auto space-y-6">
       
       <!-- Header -->
       <div class="text-center space-y-2">
-        <h1 class="text-3xl font-bold text-gray-800">Histori Deteksi</h1>
-        <p class="text-gray-600">Lihat semua riwayat deteksi buah sawit kamu</p>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Histori Deteksi</h1>
+        <p class="text-gray-600 dark:text-gray-300">Lihat semua riwayat deteksi buah sawit kamu</p>
       </div>
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-          <div class="text-3xl font-bold text-green-600">{{ posts.length }}</div>
-          <div class="text-xs text-gray-500 mt-1">Total Deteksi</div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ posts.length }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Deteksi</div>
         </div>
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-          <div class="text-3xl font-bold text-blue-600">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">
             {{ posts.reduce((sum, post) => sum + getTotalObjects(post), 0) }}
           </div>
-          <div class="text-xs text-gray-500 mt-1">Total Objek</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Objek</div>
         </div>
-        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 col-span-2">
-          <div class="text-sm font-semibold text-gray-700 mb-2">📅 Deteksi Terakhir</div>
-          <div class="text-lg text-gray-600">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-100 dark:border-gray-700 col-span-2">
+          <div class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">📅 Deteksi Terakhir</div>
+          <div class="text-lg text-gray-600 dark:text-gray-300">
             {{ posts[0] ? formatRelativeTime(posts[0].create_at) : 'Belum ada' }}
           </div>
         </div>
@@ -160,33 +160,33 @@ onMounted(() => {
           v-model="searchQuery"
           type="text"
           placeholder="🔍 Cari berdasarkan kategori (mentah, matang, dll)..."
-          class="w-full px-5 py-4 pl-12 bg-white rounded-2xl border border-gray-200 shadow-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition text-gray-700"
+          class="w-full px-5 py-4 pl-12 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
         />
-        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
         <button
           v-if="searchQuery"
           @click="searchQuery = ''"
-          class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
         >
           ✕
         </button>
       </div>
 
       <!-- Error Message -->
-      <div v-if="error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center gap-3">
-        <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-if="error" class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 dark:border-red-400 p-4 rounded-r-xl flex items-center gap-3">
+        <svg class="w-5 h-5 text-red-500 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <p class="text-red-700 text-sm flex-1">{{ error }}</p>
-        <button @click="error = null" class="text-red-500 hover:text-red-700 font-bold">✕</button>
+        <p class="text-red-700 dark:text-red-300 text-sm flex-1">{{ error }}</p>
+        <button @click="error = ''" class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">✕</button>
       </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-        <div class="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-        <p class="text-gray-600 mt-4">Memuat histori...</p>
+        <div class="w-16 h-16 border-4 border-green-200 dark:border-green-900/30 border-t-green-600 dark:border-t-green-400 rounded-full animate-spin"></div>
+        <p class="text-gray-600 dark:text-gray-300 mt-4">Memuat histori...</p>
       </div>
 
       <!-- Posts Grid -->
@@ -194,18 +194,17 @@ onMounted(() => {
         <div
           v-for="post in filteredPosts"
           :key="post.post_id"
-          :data-post-id="post.post_id"
-          class="group bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+          class="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         >
           <!-- Image -->
-          <div class="relative h-48 bg-gray-50 overflow-hidden">
+          <div class="relative h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden">
             <img
               :src="getImageUrl(post.image_url)"
               alt="Hasil Deteksi"
               class="w-full h-full object-contain p-4"
               @error="(e) => e.target.src = 'https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia'"
             />
-            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-medium text-gray-600 shadow">
+            <div class="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-2 py-1 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300 shadow">
               {{ formatRelativeTime(post.create_at) }}
             </div>
           </div>
@@ -213,7 +212,7 @@ onMounted(() => {
           <!-- Content -->
           <div class="p-4 space-y-3">
             <!-- Date -->
-            <div class="flex items-center gap-2 text-xs text-gray-500">
+            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
@@ -222,7 +221,7 @@ onMounted(() => {
 
             <!-- Total Objects Badge -->
             <div class="flex items-center gap-2">
-              <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+              <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-semibold">
                 📊 {{ getTotalObjects(post) }} Objek
               </span>
             </div>
@@ -232,14 +231,14 @@ onMounted(() => {
               <span
                 v-for="[label, count] in getLabelCounter(post)"
                 :key="label"
-                class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-lg font-medium"
+                class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded-lg font-medium"
               >
                 {{ label.charAt(0).toUpperCase() + label.slice(1) }} ×{{ count }}
               </span>
             </div>
 
             <!-- Actions -->
-            <div class="flex gap-2 pt-2 border-t border-gray-100">
+            <div class="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
               <a
                 :href="getImageUrl(post.image_url)"
                 target="_blank"
@@ -250,7 +249,7 @@ onMounted(() => {
               </a>
               <button
                 @click="confirmDelete(post)"
-                class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition flex items-center justify-center"
+                class="px-4 py-2.5 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl transition"
                 title="Hapus"
                 aria-label="Hapus history"
               >
@@ -266,15 +265,15 @@ onMounted(() => {
       <!-- Empty State -->
       <div v-else-if="!loading" class="text-center py-20">
         <div class="text-7xl mb-4">📭</div>
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
           {{ searchQuery ? 'Tidak ada hasil pencarian' : 'Belum ada histori deteksi' }}
         </h3>
-        <p class="text-gray-500 mb-6">
+        <p class="text-gray-500 dark:text-gray-400 mb-6">
           {{ searchQuery ? 'Coba kata kunci lain' : 'Mulai deteksi buah sawit pertama kamu!' }}
         </p>
         <router-link
           to="/detection"
-          class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg shadow-green-200"
+          class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg shadow-green-200 dark:shadow-green-900/20"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -283,46 +282,29 @@ onMounted(() => {
         </router-link>
       </div>
 
-      <!-- ✅ Delete Confirmation Modal -->
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition duration-150 ease-in"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div 
-            v-if="showDeleteConfirm" 
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            @click.self="closeModal"
-          >
-            <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-800 text-center">Hapus Data?</h3>
-              <p class="text-gray-600 text-center text-sm">
-                Data yang dihapus tidak dapat dikembalikan.
-              </p>
-              <div class="flex gap-3 pt-2">
-                <button
-                  @click="closeModal"
-                  class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition"
-                >
-                  Batal
-                </button>
-                <button
-                  @click="deletePost"
-                  class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition"
-                >
-                  Hapus
-                </button>
-              </div>
-            </div>
+      <!-- Delete Confirmation Modal -->
+      <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full space-y-4 border border-gray-100 dark:border-gray-700">
+          <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white text-center">Hapus Data?</h3>
+          <p class="text-gray-600 dark:text-gray-300 text-center text-sm">Data yang dihapus tidak dapat dikembalikan.</p>
+          <div class="flex gap-3">
+            <button
+              @click="showDeleteConfirm = false"
+              class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-semibold transition"
+            >
+              Batal
+            </button>
+            <button
+              @click="deletePost"
+              class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition"
+            >
+              Hapus
+            </button>
           </div>
         </Transition>
       </Teleport>
@@ -331,7 +313,7 @@ onMounted(() => {
       <div class="text-center pt-4 pb-8">
         <router-link
           to="/dashboard"
-          class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition"
+          class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium transition"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
