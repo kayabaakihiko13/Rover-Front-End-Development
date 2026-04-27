@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { authApi } from "@/services/api";
 import { emitAuthChange } from "@/composables/useAuth";
+import { STORAGE_KEYS, ROUTES } from "@/constants"; 
 
 const router = useRouter();
+const route = useRoute();
 
 const form = ref({
   username: "",
@@ -22,12 +24,21 @@ const handleLogin = async () => {
     const response = await authApi.login(form.value.username, form.value.password);
     const data = response.data;
 
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("username", form.value.username);
+    localStorage.setItem(STORAGE_KEYS.USER_TOKEN, data.access_token);
+    localStorage.setItem(STORAGE_KEYS.USER_USERNAME, form.value.username);
 
     emitAuthChange();
 
-    router.push("/dashboard");
+
+    const redirectPath = route.query.redirect || ROUTES.DASHBOARD;
+    
+    if (route.query.expired === 'true') {
+      alert("Session expired, silakan login kembali");
+      router.replace({ path: redirectPath, query: {} });
+    } else {
+      router.replace(redirectPath);
+    }
+    
   } catch (err) {
     errorMessage.value = err.response?.data?.detail || "Login gagal.";
   } finally {

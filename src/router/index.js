@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { jwtDecode } from "jwt-decode"
 import { ROUTES, STORAGE_KEYS } from "@/constants";
-
 // Views
 import HomeView from "@/views/user/HomeView.vue";
 import RegisterView from "@/views/user/RegisterView.vue";
@@ -98,13 +97,16 @@ const router = createRouter({
 router.beforeEach((to, _, next) => {
   const token = localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
   const adminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
+  
+  // Pakai fungsi isTokenExpired yang sudah ada
   const isUserValid = token && !isTokenExpired(token);
+  const isAdminValid = adminToken && !isTokenExpired(adminToken); 
+  
   const isLoggedIn = !!token;
   const isAdminLoggedIn = !!adminToken;
 
   // Admin Routes Guard
   if (to.path.startsWith("/admin")) {
-    // Force logout user when accessing admin
     if (isLoggedIn) {
       localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
@@ -115,26 +117,33 @@ router.beforeEach((to, _, next) => {
       return isAdminLoggedIn ? next(ROUTES.ADMIN_DASHBOARD) : next();
     }
 
-    if (!isAdminLoggedIn) {
+    // cek isAdminValid, bukan isUserValid
+    if (!isAdminLoggedIn || (adminToken && isTokenExpired(adminToken))) {
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_USERNAME);
       return next(ROUTES.ADMIN_LOGIN);
     }
-    return isAdminLoggedIn ? next() : next(ROUTES.ADMIN_LOGIN);
+    return next();
   }
 
-  // Auth Required Guard
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    return next(ROUTES.LOGIN);
+  // User Auth Required Guard
+  if (to.meta.requiresAuth) {
+    // cek token expired untuk user routes
+    if (!isLoggedIn || (token && isTokenExpired(token))) {
+      localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
+      window.dispatchEvent(new Event("auth-changed"));
+      return next({ 
+          path: ROUTES.LOGIN, 
+          query: { expired: 'true', redirect: to.fullPath }
+      });
+    }
   }
-  // auth token experied guard
-  if (to.meta.requiresAdminAuth && !isUserValid) {
-    localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
-    return next(ROUTES.LOGIN);
-  }
+  
   // Guest Only Guard
-  if (to.meta.guestOnly && isLoggedIn) {
+  if (to.meta.guestOnly && isLoggedIn && !isTokenExpired(token)) {
     return next(ROUTES.DASHBOARD);
   }
-
 
   next();
 });

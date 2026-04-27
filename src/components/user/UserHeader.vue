@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useAuth, emitAuthChange } from "@/composables/useAuth";
+import { userAuth, emitAuthChange } from "@/composables/useAuth";
 import { useTheme } from "@/composables/useTheme";
 
 const router = useRouter();
@@ -16,7 +16,7 @@ const isLoggingOut = ref(false);
 const showError = ref(false);
 const errorMsg = ref("");
 
-const { username, logout: authLogout } = useAuth();
+const { username, logout: authLogout } = userAuth();
 
 const isLandingPage = computed(() => route.path === '/' && !username.value);
 
