@@ -61,7 +61,7 @@ const handleLogin = async () => {
             v-model="form.username"
             type="text"
             placeholder="Nama Pengguna"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none"
             required
           />
         </div>
@@ -71,7 +71,7 @@ const handleLogin = async () => {
             v-model="form.password"
             type="password"
             placeholder="Kata Sandi"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none"
             required
           />
         </div>
