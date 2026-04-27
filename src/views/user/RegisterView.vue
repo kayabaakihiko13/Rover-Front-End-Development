@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, watch} from "vue";
 import { useRouter } from "vue-router";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -15,32 +15,45 @@ const form = ref({
 
 const loading = ref(false);
 const errorMessage = ref("");
-const successMessage = ref("");
-
-const passwordError = computed(() => {
-  if (!form.value.password) return "";
-  if (form.value.password.length < 10) {
-    return "Password minimal 10 karakter";
-  }
-  return "";
-});
 
 const fieldErrors = ref({
   username: "",
+  password:""
 });
+
+watch(() => form.value.username, () => fieldErrors.value.username = "");
+watch(() => form.value.password, () => fieldErrors.value.password = "");
 
 const handleRegister = async () => {
   if (loading.value) return;
 
-  if (passwordError.value) {
-    errorMessage.value = passwordError.value;
-    return;
+  // error state initial
+  errorMessage.value = "";
+  fieldErrors.value.username = "";
+  fieldErrors.value.password = "";
+
+  if (!form.value.username){
+    fieldErrors.value.username = "Username wajib diisi";
+    return ;
   }
 
-  errorMessage.value = "";
-  successMessage.value = "";
-  fieldErrors.value.username = "";
+  if (form.value.username.length<6){
+    fieldErrors.value.username = "Username minimal 6 karakter";
+    return ;
+  }
 
+  // for handling password error
+  if (!form.value.password) {
+    fieldErrors.value.password = "Kata Sandi ini wajib diisi";
+    return
+  }
+  if (form.value.password.length < 10) {
+    fieldErrors.value.password = "Password minimal 10 karakter";
+    return ;
+  }
+
+  loading.value = true;
+  
   try {
     const url = `${API_BASE_URL.replace(/\/$/, "")}/users/register`;
     const response = await fetch(url, {
@@ -60,10 +73,10 @@ const handleRegister = async () => {
       return;
     }
 
-    successMessage.value = "Registrasi berhasil! Mengarahkan ke login...";
-    setTimeout(() => router.push("/login"), 1000);
+    router.push("/login");
 
-  } catch {
+  } catch (err){
+    alert(err)
     errorMessage.value = "Gagal menghubungi server.";
   } finally {
     loading.value = false;
@@ -178,8 +191,8 @@ const handleRegister = async () => {
               required
               class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-600 dark:focus:border-green-400 transition-colors"
             />
-            <p v-if="passwordError" class="error-text">
-              {{ passwordError }}
+            <p v-if="fieldErrors.password" class="error-text">
+              {{ fieldErrors.password }}
             </p>
           </div>
 
@@ -187,12 +200,6 @@ const handleRegister = async () => {
           <p v-if="errorMessage" class="error-text text-center">
             {{ errorMessage }}
           </p>
-
-          <!-- Success -->
-          <p v-if="successMessage" class="success-text text-center">
-            {{ successMessage }}
-          </p>
-
           <!-- Submit Button -->
           <button
             type="submit"
