@@ -127,7 +127,6 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-6">
     <div class="max-w-6xl mx-auto space-y-6">
-      
       <!-- Header -->
       <div class="text-center space-y-2">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Histori Deteksi</h1>
@@ -282,29 +281,39 @@ onMounted(() => {
         </router-link>
       </div>
 
-      <!-- Delete Confirmation Modal -->
-      <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full space-y-4 border border-gray-100 dark:border-gray-700">
-          <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto">
-            <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-800 dark:text-white text-center">Hapus Data?</h3>
-          <p class="text-gray-600 dark:text-gray-300 text-center text-sm">Data yang dihapus tidak dapat dikembalikan.</p>
-          <div class="flex gap-3">
-            <button
-              @click="showDeleteConfirm = false"
-              class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-semibold transition"
-            >
-              Batal
-            </button>
-            <button
-              @click="deletePost"
-              class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition"
-            >
-              Hapus
-            </button>
+      <!-- ✅ Delete Confirmation Modal (FIXED) -->
+      <Teleport to="body">
+        <Transition name="modal">
+          <div
+            v-if="showDeleteConfirm"
+            class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4"
+            @click.self="closeModal"
+            @keyup.escape="closeModal"
+            tabindex="-1"
+          >
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full space-y-4 border border-gray-100 dark:border-gray-700">
+              <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto">
+                <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 dark:text-white text-center">Hapus Data?</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-center text-sm">Data yang dihapus tidak dapat dikembalikan.</p>
+              <div class="flex gap-3">
+                <button
+                  @click="closeModal"
+                  class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-semibold transition"
+                >
+                  Batal
+                </button>
+                <button
+                  @click="deletePost"
+                  class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
           </div>
         </Transition>
       </Teleport>
