@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { userAuth, emitAuthChange } from "@/composables/useAuth";
 import { useTheme } from "@/composables/useTheme";
+import {STORAGE_KEYS} from "@/constants"
 
 const router = useRouter();
 const route = useRoute();
@@ -21,7 +22,7 @@ const { username, logout: authLogout } = userAuth();
 const isLandingPage = computed(() => route.path === '/' && !username.value);
 
 const refreshUser = () => {
-  username.value = localStorage.getItem("username");
+  username.value = localStorage.getItem(STORAGE_KEYS.USER_USERNAME);
 };
 
 const closeMobileMenu = () => {
@@ -53,8 +54,8 @@ const logout = async () => {
       setTimeout(() => { showError.value = false; }, 3000);
     }
   } finally {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
     emitAuthChange();
     closeMobileMenu();
     isLoggingOut.value = false;

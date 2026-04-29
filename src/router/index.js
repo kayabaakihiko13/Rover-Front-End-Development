@@ -133,9 +133,9 @@ router.beforeEach((to, _, next) => {
       localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
       window.dispatchEvent(new Event("auth-changed"));
+      sessionStorage.setItem('session_expired',to.fullPath);
       return next({ 
-          path: ROUTES.LOGIN, 
-          query: { expired: 'true', redirect: to.fullPath }
+          path: ROUTES.LOGIN
       });
     }
   }

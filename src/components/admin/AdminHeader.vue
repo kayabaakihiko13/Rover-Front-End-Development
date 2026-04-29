@@ -1,15 +1,15 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import { useAdminAuth, emitAdminAuthChange } from "@/composables/useAdminAuth";
-import { ROUTES,MENU_ITEMS} from "@/constants";
+import { STORAGE_KEYS,ROUTES,MENU_ITEMS} from "@/constants";
 
 const router = useRouter();
 const route = useRoute();
 const { adminUsername } = useAdminAuth();
 
 const handleLogout = () => {
-  localStorage.removeItem("admin_token");
-  localStorage.removeItem("admin_username");
+  localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
+  localStorage.removeItem(STORAGE_KEYS.ADMIN_USERNAME);
   emitAdminAuthChange();
   router.push(ROUTES.ADMIN_LOGIN);
 };
