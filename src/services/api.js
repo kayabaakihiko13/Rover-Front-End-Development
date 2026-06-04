@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
 
 const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
   const instance = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: "",
     headers: {
       "Content-Type": "application/json",
     },
@@ -22,10 +22,6 @@ const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      // Debug: Cek URL apa yang bikin error 401
-      console.log("Error URL:", error.config?.url);
-      console.log("Error Status:", error.response?.status);
-
       const isAuthPath = error.config?.url?.includes("/login") ||
         error.config?.url?.includes("/register");
 
@@ -38,15 +34,12 @@ const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
           // redirect ke login kalau udah exp tokenya
           if(tokenKey === STORAGE_KEYS.USER_TOKEN){
             if (router.currentRoute.value.path !== ROUTES.LOGIN) {
-                router.push({ 
-                    path: ROUTES.LOGIN, 
+                router.push({
+                    path: ROUTES.LOGIN,
                     query: { expired: 'true', redirect: router.currentRoute.value.fullPath }
                 });
             }
           }
-        } else {
-          // Kalau gagal login, biarkan LoginView yang urus, jangan kirim event auth-changed
-          console.warn("Kredensial salah, tapi bukan token expired.");
         }
       }
       return Promise.reject(error);
@@ -80,7 +73,7 @@ export const authApi = {
     });
   },
   register: (data) => api.post("/users/register", data),
-  forgotPassword: (email) => api.post("/users/forgot-password", { email }),
+  forgotPassword: (username) => api.post("/users/forgot-password", { username }),
   resetPassword: (token, newPassword) =>
     api.post("/users/reset-password", { token, new_password: newPassword }),
 };
@@ -99,9 +92,11 @@ export const postsApi = {
 
 export const getImageUrl = async (path) => {
   if (!path) return "/placeholder-image.jpg";
-  
+
   const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/");
-  const url = `${API_BASE_URL}/${cleanPath}`;
+  const url = import.meta.env.DEV
+    ? `/${cleanPath}`
+    : `${API_BASE_URL}/${cleanPath}`;
   const token = localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
 
   try {
@@ -113,8 +108,7 @@ export const getImageUrl = async (path) => {
 
     const blob = await response.blob();
     return URL.createObjectURL(blob);
-  } catch (error) {
-    console.error("Image Error:", error);
+  } catch {
     return "/placeholder-image.jpg";
   }
 };

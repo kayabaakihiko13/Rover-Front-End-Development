@@ -82,8 +82,7 @@ const startCamera = async () => {
       });
       videoRef.value.srcObject = stream.value;
     }
-  } catch (err) {
-    console.error("Camera error:", err);
+  } catch {
     errorMessage.value = "Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.";
     showCamera.value = false;
   }
@@ -157,7 +156,6 @@ const handleSubmit = async () => {
     router.push({ name: "result-detection" });
     
   } catch (err) {
-    console.error(err);
     errorMessage.value = err.response?.data?.detail || "Kesalahan jaringan. Silakan coba lagi.";
   } finally {
     isSubmitting.value = false;

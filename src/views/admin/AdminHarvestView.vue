@@ -86,7 +86,6 @@ const deletePost = async () => {
     showDeleteConfirm.value = false;
     postToDelete.value = null;
   } catch (err) {
-    console.error('Error deleting post:', err);
     error.value = err.response?.data?.detail || "Gagal menghapus data";
   }
 };
@@ -101,10 +100,7 @@ const fetchHarvest = async () => {
   error.value = "";
   try {
     const response = await adminApiService.getAllPosts();
-    console.log("Full Response:", response);
-    console.log("Response keys:", Object.keys(response));
-    console.log("response.data:", response.data);
-    
+
     let postsData = [];
     if (Array.isArray(response)) {
       postsData = response;
@@ -115,7 +111,6 @@ const fetchHarvest = async () => {
     } else if (response.data?.harvests) {
       postsData = response.data.harvests;
     } else {
-      console.warn("Unknown response format:", response);
       postsData = [];
     }
     
@@ -125,7 +120,6 @@ const fetchHarvest = async () => {
     
     posts.value = postsData;
   } catch (err) {
-    console.error("Harvest Error:", err);
     error.value = err.response?.data?.detail || err.message || "Gagal memuat data hasil panen";
   } finally {
     loading.value = false;

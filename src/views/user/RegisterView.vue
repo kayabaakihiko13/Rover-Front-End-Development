@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch} from "vue";
 import { useRouter } from "vue-router";
+import { authApi } from "@/services/api";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
 
 const form = ref({
@@ -55,29 +55,17 @@ const handleRegister = async () => {
   loading.value = true;
   
   try {
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/register`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form.value),
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      if (response.status === 400 && data.detail?.toLowerCase().includes("username")) {
-        fieldErrors.value.username = data.detail;
-        return;
-      }
-      errorMessage.value = data.detail ?? "Registrasi gagal.";
-      return;
-    }
-
+    const response = await authApi.register(form.value);
     router.push("/login");
 
   } catch (err){
-    alert(err)
-    errorMessage.value = "Gagal menghubungi server.";
+    const detail = err.response?.data?.detail || "";
+    if (err.response?.status === 400 && detail.toLowerCase().includes("username")) {
+      fieldErrors.value.username = detail;
+      loading.value = false;
+      return;
+    }
+    errorMessage.value = detail || "Gagal menghubungi server.";
   } finally {
     loading.value = false;
   }
