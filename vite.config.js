@@ -33,6 +33,28 @@ export default defineConfig(({ mode }) => {
       watch: {
         usePolling: true,
       },
+      proxy: {
+        '/users': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+        '/posts': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+        '/admin': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+        '/health': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+        '/uploads': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      },
     }
   }
 })

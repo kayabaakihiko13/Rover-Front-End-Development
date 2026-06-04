@@ -23,7 +23,6 @@ const fetchHistory = async () => {
     
     posts.value = postsData
   } catch (err) {
-    console.error('Error fetching history:', err)
     error.value = err.response?.data?.detail || 'Gagal memuat histori'
     if (err.response?.status === 401) {
       router.push('/login')
@@ -105,9 +104,6 @@ const deletePost = async () => {
     postToDelete.value = null
     
   } catch (err) {
-    console.error('Error deleting post:', err)
-    console.error('Response:', err.response?.data)
-    
     error.value = err.response?.data?.detail || 'Gagal menghapus data'
     
     // Auto hide error setelah 5 detik
