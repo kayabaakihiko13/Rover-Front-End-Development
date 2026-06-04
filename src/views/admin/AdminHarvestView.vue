@@ -100,9 +100,6 @@ const fetchHarvest = async () => {
   error.value = "";
   try {
     const response = await adminApiService.getAllPosts();
-    console.log("Full Response:", response);
-    console.log("Response keys:", Object.keys(response));
-    console.log("response.data:", response.data);
     
     let postsData = [];
     if (Array.isArray(response)) {
