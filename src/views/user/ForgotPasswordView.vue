@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from "vue";
+import { authApi } from "@/services/api";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-const username = ref(""); // pakai username
+const username = ref("");
 const loading = ref(false);
 const message = ref("");
 const error = ref("");
@@ -14,21 +13,10 @@ const handleSubmit = async () => {
   error.value = "";
 
   try {
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/users/forgot-password`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: username.value }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.detail || "Gagal mengirim tautan reset");
-
-    message.value = data.message;
+    const response = await authApi.forgotPassword(username.value);
+    message.value = response.data.message;
   } catch (err) {
-    error.value = err.message || "Terjadi kesalahan";
+    error.value = err.response?.data?.detail || err.message || "Terjadi kesalahan";
   } finally {
     loading.value = false;
   }

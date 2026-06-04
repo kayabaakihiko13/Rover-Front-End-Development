@@ -131,7 +131,6 @@ const saveResult = async () => {
       router.push("/detection");
     }, 2000);
   } catch (err) {
-    console.error("Error saat menyimpan:", err);
     errorMessage.value = err.response?.data?.detail || "Terjadi kesalahan saat menyimpan.";
   } finally {
     isSaving.value = false;
