@@ -75,7 +75,7 @@ export const authApi = {
   register: (data) => api.post("/users/register", data),
   forgotPassword: (username) => api.post("/users/forgot-password", { username }),
   resetPassword: (token, newPassword) =>
-    api.post(`/users/reset-password/?token=${token}`, { new_password: newPassword }),
+    api.post(`/users/reset-password/?token=${token}`, { headers: { "Content-Type": "application/x-www-form-urlencoded" } }),
 };
 
 export const postsApi = {
