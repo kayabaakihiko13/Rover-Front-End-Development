@@ -1,7 +1,18 @@
 import axios from "axios";
-import { STORAGE_KEYS,ROUTES} from "@/constants";
+import { STORAGE_KEYS, ROUTES } from "@/constants";
 import router from "@/router";
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
+
+const API_BASE_URL = (() => {
+  let url = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
+  
+  // Jika di production (HTTPS) dan backend masih HTTP, paksa ke HTTPS
+  if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+    console.warn('Mixed content detected, upgrading to HTTPS');
+    url = url.replace(/^http:/, 'https:');
+  }
+  
+  return url;
+})();
 
 const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
   const instance = axios.create({
@@ -32,12 +43,12 @@ const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
           if (onUnauthorized) localStorage.removeItem(onUnauthorized);
           window.dispatchEvent(new Event(authEventName));
           // redirect ke login kalau udah exp tokenya
-          if(tokenKey === STORAGE_KEYS.USER_TOKEN){
+          if (tokenKey === STORAGE_KEYS.USER_TOKEN) {
             if (router.currentRoute.value.path !== ROUTES.LOGIN) {
-                router.push({
-                    path: ROUTES.LOGIN,
-                    query: { expired: 'true', redirect: router.currentRoute.value.fullPath }
-                });
+              router.push({
+                path: ROUTES.LOGIN,
+                query: { expired: 'true', redirect: router.currentRoute.value.fullPath }
+              });
             }
           }
         }
@@ -75,7 +86,11 @@ export const authApi = {
   register: (data) => api.post("/users/register", data),
   forgotPassword: (username) => api.post("/users/forgot-password", { username }),
   resetPassword: (token, newPassword) =>
-    api.post(`/users/reset-password/?token=${token}`, { headers: { "Content-Type": "application/x-www-form-urlencoded" } }),
+    api.post("/users/reset-password", {
+      token: token,
+      new_password: newPassword,
+      confirm_password: newPassword
+    }),
 };
 
 export const postsApi = {
