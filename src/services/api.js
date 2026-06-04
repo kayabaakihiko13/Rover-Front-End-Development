@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
 
 const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
   const instance = axios.create({
-    baseURL: "",
+    baseURL: API_BASE_URL,
     headers: {
       "Content-Type": "application/json",
     },
@@ -75,7 +75,7 @@ export const authApi = {
   register: (data) => api.post("/users/register", data),
   forgotPassword: (username) => api.post("/users/forgot-password", { username }),
   resetPassword: (token, newPassword) =>
-    api.post("/users/reset-password", { token, new_password: newPassword }),
+    api.post(`/users/reset-password/?token=${token}`, { new_password: newPassword }),
 };
 
 export const postsApi = {
