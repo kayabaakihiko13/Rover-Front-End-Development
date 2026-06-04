@@ -1,22 +1,22 @@
 <script setup>
-import { ref,computed } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { authApi } from "@/services/api";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const route = useRoute();
 const router = useRouter();
 
-const form = {
+const form = reactive({
   newpassword:"",
   confirmpassword:""
-}
+})
 
 const loading = ref(false);
 const error = ref("");
 const message = ref("");
 
 const passwordError = computed(()=>{
-  if(newPassword.value.length <10){
+  if(form.newpassword.length < 10){
     return "Password minimal 10 karakter";
   }
   return "";
@@ -25,8 +25,8 @@ const passwordError = computed(()=>{
 const isFormValid = computed(()=>{
   return (
     !passwordError.value &&
-    form.newpassword.value === form.confirmpassword.value &&
-    form.newpassword.value.length > 0
+    form.newpassword === form.confirmpassword &&
+    form.newpassword.length > 0
   );
 })
 
@@ -43,29 +43,11 @@ const handleReset = async () => {
   const token = route.query.token;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL.replace(/\/$/, "")}/users/reset-password`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          new_password: form.newpassword.value,
-          confirm_password: form.confirmpassword.value,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      message.value = data.message;
-      setTimeout(() => router.push("/login"), 1500);
-    } else {
-      error.value = data.detail || "Terjadi kesalahan";
-    }
+    const response = await authApi.resetPassword(token, form.newpassword);
+    message.value = response.data.message;
+    setTimeout(() => router.push("/login"), 1500);
   } catch (err) {
-    error.value = "Gagal terhubung ke server";
+    error.value = err.response?.data?.detail || err.message || "Terjadi kesalahan";
   } finally {
     loading.value = false;
   }
