@@ -7,10 +7,9 @@ import {STORAGE_KEYS} from "@/constants"
 
 const router = useRouter();
 const route = useRoute();
-const { theme, appliedTheme, setTheme } = useTheme();
-const { username, logout: authLogout } = userAuth();
 
 // Theme
+const { theme, appliedTheme, setTheme } = useTheme();
 
 // Auth & UI State
 const open = ref(false);
@@ -18,40 +17,45 @@ const isLoggingOut = ref(false);
 const showError = ref(false);
 const errorMsg = ref("");
 
-// computed logic
-const isLoggedIn = computed(() => !!username.value);
-const isLandingPage = computed(() => route.path === '/' && !isLoggedIn.value);
-const isDark = computed(() => appliedTheme.value === 'dark');
+const { username, logout: authLogout } = userAuth();
 
-
-
-const clearAuthData = () => {
-  localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
-};
+const isLandingPage = computed(() => route.path === '/' && !username.value);
 
 const refreshUser = () => {
   username.value = localStorage.getItem(STORAGE_KEYS.USER_USERNAME);
 };
 
+const closeMobileMenu = () => {
+  open.value = false;
+};
 
-const closeMobileMenu = () => open.value = false;
+onMounted(() => {
+  refreshUser();
+  window.addEventListener("storage", refreshUser);
+});
 
-const handleLogout = async () => {
+onBeforeUnmount(() => {
+  window.removeEventListener("storage", refreshUser);
+});
+
+const logout = async () => {
   isLoggingOut.value = true;
   showError.value = false;
 
   try {
-    await authLogout?.();
+    if (typeof authLogout === 'function') {
+      await authLogout();
+    }
   } catch (error) {
     const status = error?.response?.status;
-    if (![401, 403].includes(status)) {
-      showError.value = true;
+    if (status !== 401 && status !== 403) {
       errorMsg.value = "Gagal logout. Cek koneksi internet.";
-      setTimeout(() => showError.value = false, 3000);
+      showError.value = true;
+      setTimeout(() => { showError.value = false; }, 3000);
     }
   } finally {
-    clearAuthData();
+    localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
     emitAuthChange();
     closeMobileMenu();
     isLoggingOut.value = false;
@@ -61,7 +65,6 @@ const handleLogout = async () => {
 
 const scrollToSection = (sectionId) => {
   closeMobileMenu();
-  
   if (route.path === '/') {
     const el = document.getElementById(sectionId);
     if (el) {
@@ -73,19 +76,13 @@ const scrollToSection = (sectionId) => {
   }
 };
 
+// Toggle theme: light <-> dark
 const toggleTheme = () => {
-  setTheme(isDark.value ? 'light' : 'dark');
+  setTheme(appliedTheme.value === 'dark' ? 'light' : 'dark');
 };
 
-onMounted(()=>{
-  refreshUser()
-  window.addEventListener("storage",refreshUser);
-});
-
-onBeforeUnmount(()=>{
-  window.removeEventListener("storage",refreshUser);
-});
-
+// Check current applied theme
+const isDark = computed(() => appliedTheme.value === 'dark');
 </script>
 
 <template>
@@ -125,7 +122,7 @@ onBeforeUnmount(()=>{
           <div v-if="username" class="flex items-center space-x-4">
             <span class="text-gray-700 dark:text-gray-200 font-medium">Hi, {{ username }}</span>
             <button 
-              @click="handleLogout" 
+              @click="logout" 
               :disabled="isLoggingOut"
               class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -219,7 +216,7 @@ onBeforeUnmount(()=>{
           <div v-if="username">
             <div class="px-3 py-2 text-gray-700 dark:text-gray-200 font-medium bg-gray-50 dark:bg-gray-800 rounded">Hi, {{ username }}</div>
             <button 
-              @click="handleLogout"
+              @click="logout"
               :disabled="isLoggingOut"
               class="block w-full text-left px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -237,7 +234,6 @@ onBeforeUnmount(()=>{
 </template>
 
 <style scoped>
-/* Single fade animation */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -247,17 +243,16 @@ onBeforeUnmount(()=>{
   opacity: 0;
   transform: translateY(-10px);
 }
-
-/* Mobile menu slide */
-.slide-down-enter-active {
-  transition: all 0.2s ease-out;
+</style>
+<style scoped>
+/* Animasi notifikasi error */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
-.slide-down-leave-active {
-  transition: all 0.15s ease-in;
-}
-.slide-down-enter-from,
-.slide-down-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-10px);
 }
 </style>
