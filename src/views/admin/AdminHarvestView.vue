@@ -86,7 +86,6 @@ const deletePost = async () => {
     showDeleteConfirm.value = false;
     postToDelete.value = null;
   } catch (err) {
-    console.error('Error deleting post:', err);
     error.value = err.response?.data?.detail || "Gagal menghapus data";
   }
 };
@@ -100,11 +99,7 @@ const fetchHarvest = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const response = await adminApiService.getAllPosts();
-    console.log("Full Response:", response);
-    console.log("Response keys:", Object.keys(response));
-    console.log("response.data:", response.data);
-    
+    const response = await adminApiService.getAllPosts();    
     let postsData = [];
     if (Array.isArray(response)) {
       postsData = response;

@@ -27,7 +27,6 @@ const handleSubmit = async () => {
     if (!response.ok) throw new Error(data.detail || "Gagal mengirim tautan reset");
 
     message.value = data.message;
-    console.log("Reset link:", data.reset_link);
   } catch (err) {
     error.value = err.message || "Terjadi kesalahan";
   } finally {

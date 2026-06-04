@@ -24,23 +24,38 @@ onMounted(() => {
 
 const handleLogin = async () => {
   isSubmitting.value = true;
-  errorMessage.value = "";
-
+  errorMessage.value = ""; 
+  
   try {
     const response = await adminApiService.login(form.value.username, form.value.password);
     const data = response.data;
-
+    
     localStorage.setItem(STORAGE_KEYS.ADMIN_TOKEN, data.access_token);
     localStorage.setItem(STORAGE_KEYS.ADMIN_USERNAME, form.value.username);
-
+    
     emitAdminAuthChange();
     router.push(ROUTES.ADMIN_DASHBOARD);
   } catch (err) {
-    errorMessage.value = err.response?.data?.detail || "Login gagal.";
+    // Ambil data respon error dari objek Axios
+    const errorData = err.response?.data;
+
+    if (err.response?.status === 401) {
+      // Memeriksa struktur objek error dari FastAPI/OAuth2 secara fleksibel
+      errorMessage.value = 
+        errorData?.detail || 
+        errorData?.message || 
+        errorData?.error_description || 
+        "Nama pengguna atau kata sandi salah.";
+    } else if (err.response?.status === 422) {
+      errorMessage.value = "Format data tidak valid (Unprocessable Entity).";
+    } else {
+      errorMessage.value = "Terjadi gangguan pada server. Silakan coba lagi nanti.";
+    }
   } finally {
     isSubmitting.value = false;
   }
 };
+
 </script>
 
 <template>

@@ -22,9 +22,6 @@ const createApiInstance = (tokenKey, authEventName, onUnauthorized) => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      // Debug: Cek URL apa yang bikin error 401
-      console.log("Error URL:", error.config?.url);
-      console.log("Error Status:", error.response?.status);
 
       const isAuthPath = error.config?.url?.includes("/login") ||
         error.config?.url?.includes("/register");

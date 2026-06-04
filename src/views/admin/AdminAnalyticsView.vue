@@ -12,7 +12,6 @@ const fetchAnalytics = async () => {
   error.value = "";
   try {
     const response = await adminApiService.getAnalytics(selectedDays.value);
-    console.log("Analytics Response:", response.data);
     analytics.value = response.data;
   } catch (err) {
     error.value = err.response?.data?.detail || "Gagal memuat data";
