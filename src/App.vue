@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { jwtDecode } from "jwt-decode";
 import UserHeader from "@/components/user/UserHeader.vue";
 import { ROUTES, STORAGE_KEYS } from "@/constants";
 
@@ -12,26 +13,34 @@ const showUserHeader = computed(() => {
   return !route.path.startsWith("/admin");
 });
 
-// Helper: Show notification (ganti alert dengan yang lebih user-friendly)
-const showNotification = (message, type = "warning") => {
-  // Notification only shown in dev mode with console.warn
-};
+// membuat function token Expired
+const isTokenExpired = (token) =>{
+  if(!token) return true;
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.exp < (Date.now() / 1000 - 10);
+  } catch {
+      return true;
+  }
+}
 
 // Handler untuk User Token Expired
 const handleUserAuthExpired = () => {
-  const hasToken = localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
-  if (hasToken) return;
-  if (isRedirecting.value) return;
-  if (route.path === ROUTES.LOGIN) return;
-  
-  isRedirecting.value = true;
-  
-  showNotification("Sesi Anda telah berakhir. Silakan login kembali.", "warning");
-  
+  const token = localStorage.getItem(STORAGE_KEYS.USER_TOKEN)
+  const expired = !token || isTokenExpired(token)
+  if (!expired || isRedirecting.value || route.path === ROUTES.LOGIN) return
+
+  localStorage.removeItem(STORAGE_KEYS.USER_TOKEN)
+  localStorage.removeItem(STORAGE_KEYS.USER_USERNAME)
+  window.dispatchEvent(new Event("auth-changed"))
+
+  isRedirecting.value = true
   setTimeout(() => {
-    isRedirecting.value = false;
-  }, 1500);
-};
+    isRedirecting.value = false
+    router.push({ path: ROUTES.LOGIN, query: { session: "expired" } })
+  }, 1500)
+}
+
 
 // Handler untuk Admin Token Expired
 const handleAdminAuthExpired = () => {
@@ -42,22 +51,22 @@ const handleAdminAuthExpired = () => {
   
   isRedirecting.value = true;
   
-  showNotification("Sesi Admin telah berakhir.", "warning");
-  
   setTimeout(() => {
     isRedirecting.value = false;
   }, 1500);
 };
 
+let intervalId
 onMounted(() => {
   window.addEventListener("auth-changed", handleUserAuthExpired);
   window.addEventListener("admin-auth-changed", handleAdminAuthExpired);
+  intervalId = setInterval(handleUserAuthExpired, 5 * 60 * 1000);
 });
 
 onUnmounted(() => {
-  // Cleanup listener with funcntion refence 
   window.removeEventListener("auth-changed", handleUserAuthExpired);
   window.removeEventListener("admin-auth-changed", handleAdminAuthExpired);
+  clearInterval(intervalId);
 });
 </script>
 
