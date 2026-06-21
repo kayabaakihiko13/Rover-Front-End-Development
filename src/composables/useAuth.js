@@ -1,14 +1,32 @@
 import { ref } from "vue";
 import { STORAGE_KEYS,ROUTES } from "@/constants";
 import router from "@/router";
+import { jwtDecode } from "jwt-decode";
 
 const isLoggedIn = ref(false);
 const username = ref(null);
 
+const isTokenExpired = (token) =>{
+    if(!token) return true;
+    try{
+        const decoded = jwtDecode(token);
+        return decoded.exp < (Date.now() /1000 - 10);
+    }catch{
+        return true;
+    }
+}
+
 const syncAuth = () => {
     const token = localStorage.getItem(STORAGE_KEYS.USER_TOKEN); 
+    if(token && isTokenExpired(token)){
+        localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER_USERNAME);
+        isLoggedIn.value = false;
+        username.value = null
+        return
+    }
     isLoggedIn.value = !!token;
-    username.value = localStorage.getItem(STORAGE_KEYS.USER_USERNAME);
+    username.value = token ? localStorage.getItem(STORAGE_KEYS.USER_USERNAME) : null;
 };
 
 syncAuth();
