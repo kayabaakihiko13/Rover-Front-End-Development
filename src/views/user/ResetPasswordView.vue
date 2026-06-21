@@ -1,10 +1,13 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { jwtDecode } from "jwt-decode";
 import { authApi } from "@/services/api";
 
 const route = useRoute();
 const router = useRouter();
+
+const token = route.query.token;
 
 const form = reactive({
   newpassword:"",
@@ -14,6 +17,7 @@ const form = reactive({
 const loading = ref(false);
 const error = ref("");
 const message = ref("");
+const tokenError = ref("");
 
 const passwordError = computed(()=>{
   if(form.newpassword.length < 10){
@@ -30,6 +34,20 @@ const isFormValid = computed(()=>{
   );
 })
 
+// Cek validitas token reset password
+if (!token) {
+  tokenError.value = "Token reset tidak ditemukan.";
+} else {
+  try {
+    const decoded = jwtDecode(token);
+    if (decoded.exp < (Date.now() / 1000 - 10)) {
+      tokenError.value = "Token reset sudah kedaluwarsa. Silakan minta reset password lagi.";
+    }
+  } catch {
+    tokenError.value = "Token reset tidak valid.";
+  }
+}
+
 const handleReset = async () => {
   if (!isFormValid.value) {
     error.value = passwordError.value || "Kata sandi tidak cocok!";
@@ -39,8 +57,6 @@ const handleReset = async () => {
   loading.value = true;
   error.value = "";
   message.value = "";
-
-  const token = route.query.token;
 
   try {
     const response = await authApi.resetPassword(token, form.newpassword);
@@ -62,59 +78,74 @@ const handleReset = async () => {
         Reset Kata Sandi
       </h2>
 
-      <form @submit.prevent="handleReset" class="space-y-4">
+      <!-- Token Error -->
+      <div v-if="tokenError" class="text-center">
+        <p class="text-red-600 dark:text-red-400 text-sm mb-4">
+          {{ tokenError }}
+        </p>
+        <router-link
+          to="/forgot-password"
+          class="text-green-700 dark:text-green-400 font-medium hover:underline text-sm"
+        >
+          Minta ulang reset password
+        </router-link>
+      </div>
 
-        <!-- New Password Input -->
-        <input
-          v-model="form.newpassword"
-          type="password"
-          placeholder="Kata Sandi Baru (min. 10 karakter)"
-          :minlength="10"
-          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
-                 bg-white dark:bg-gray-700 
-                 text-gray-900 dark:text-white 
-                 placeholder-gray-400 dark:placeholder-gray-500
-                 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
-        />
+      <template v-else>
+        <form @submit.prevent="handleReset" class="space-y-4">
 
-        <!-- Confirm Password Input -->
-        <input
-          v-model="form.confirmpassword"
-          type="password"
-          placeholder="Konfirmasi Kata Sandi"
-          :minlength="10"
-          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
-                 bg-white dark:bg-gray-700 
-                 text-gray-900 dark:text-white 
-                 placeholder-gray-400 dark:placeholder-gray-500
-                 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
-        />
+          <!-- New Password Input -->
+          <input
+            v-model="form.newpassword"
+            type="password"
+            placeholder="Kata Sandi Baru (min. 10 karakter)"
+            :minlength="10"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
+                   bg-white dark:bg-gray-700 
+                   text-gray-900 dark:text-white 
+                   placeholder-gray-400 dark:placeholder-gray-500
+                   focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
+          />
 
-        <!-- Password Error -->
-        <p v-if="passwordError" class="text-red-600 dark:text-red-400 text-sm">
-          {{ passwordError }}
+          <!-- Confirm Password Input -->
+          <input
+            v-model="form.confirmpassword"
+            type="password"
+            placeholder="Konfirmasi Kata Sandi"
+            :minlength="10"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 
+                   bg-white dark:bg-gray-700 
+                   text-gray-900 dark:text-white 
+                   placeholder-gray-400 dark:placeholder-gray-500
+                   focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
+          />
+
+          <!-- Password Error -->
+          <p v-if="passwordError" class="text-red-600 dark:text-red-400 text-sm">
+            {{ passwordError }}
+          </p>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="!isFormValid || loading"
+            class="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-400 dark:disabled:bg-gray-600
+                   text-white py-2 rounded-lg transition disabled:cursor-not-allowed"
+          >
+            {{ loading ? "Memproses..." : "Reset Kata Sandi" }}
+          </button>
+        </form>
+
+        <!-- Success Message -->
+        <p v-if="message" class="text-green-600 dark:text-green-400 mt-4 text-center text-sm font-medium">
+          {{ message }}
         </p>
 
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          :disabled="!isFormValid || loading"
-          class="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-400 dark:disabled:bg-gray-600
-                 text-white py-2 rounded-lg transition disabled:cursor-not-allowed"
-        >
-          {{ loading ? "Memproses..." : "Reset Kata Sandi" }}
-        </button>
-      </form>
-
-      <!-- Success Message -->
-      <p v-if="message" class="text-green-600 dark:text-green-400 mt-4 text-center text-sm font-medium">
-        {{ message }}
-      </p>
-
-      <!-- Error Message -->
-      <p v-if="error" class="text-red-600 dark:text-red-400 mt-4 text-center text-sm">
-        {{ error }}
-      </p>
+        <!-- Error Message -->
+        <p v-if="error" class="text-red-600 dark:text-red-400 mt-4 text-center text-sm">
+          {{ error }}
+        </p>
+      </template>
     </div>
   </div>
 </template>
