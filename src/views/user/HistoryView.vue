@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { postsApi, getImageUrl } from '@/services/api'
 
@@ -18,7 +18,9 @@ const fetchHistory = async () => {
     const postsData = response.data
     
     for (const post of postsData) {
-      post.imageBlobUrl = await getImageUrl(post.image_url)
+      post.imageUrlOriginal = post.image_url
+      // Jangan simpan blob URL dulu
+      post.imageBlobUrl = null
     }
     
     posts.value = postsData
@@ -29,6 +31,76 @@ const fetchHistory = async () => {
     }
   } finally {
     loading.value = false
+  }
+}
+
+// Load gambar dan render ke canvas (URL tidak akan terlihat di inspect)
+const loadImageToCanvas = async (canvasRef, post) => {
+  if (!canvasRef) return
+  
+  try {
+    let realUrl = post.imageBlobUrl
+    
+    if (!realUrl) {
+      realUrl = await getImageUrl(post.image_url)
+      post.imageBlobUrl = realUrl
+    }
+    
+    const img = new Image()
+    img.crossOrigin = 'Anonymous'
+    
+    img.onload = () => {
+      const canvas = canvasRef
+      const ctx = canvas.getContext('2d')
+      
+      // settings canvas size
+      canvas.width = img.width
+      canvas.height = img.height
+      
+      // Draw image to canvas
+      ctx.drawImage(img, 0, 0, img.width, img.height)
+      
+      // Optional: resize canvas untuk konsistensi tampilan
+      canvas.style.width = '100%'
+      canvas.style.height = '100%'
+      canvas.style.objectFit = 'contain'
+      
+      canvas.dataset.loaded = 'true'
+    }
+    
+    img.onerror = () => {
+      // Draw error message to canvas
+      const canvas = canvasRef
+      const ctx = canvas.getContext('2d')
+      canvas.width = 300
+      canvas.height = 200
+      ctx.fillStyle = '#f3f4f6'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = '#9ca3af'
+      ctx.font = '14px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('Gambar Tidak Tersedia', canvas.width/2, canvas.height/2)
+    }
+    
+    img.src = realUrl
+  } catch (error) {
+    console.error('Error loading image:', error)
+  }
+}
+
+// Load semua gambar ke canvas
+const loadAllImagesToCanvas = async () => {
+  await nextTick()
+  
+  const canvases = document.querySelectorAll('canvas[data-post-id]')
+  
+  for (const canvas of canvases) {
+    const postId = canvas.dataset.postId
+    const post = posts.value.find(p => p.post_id === postId)
+    
+    if (post && canvas.dataset.loaded !== 'true') {
+      await loadImageToCanvas(canvas, post)
+    }
   }
 }
 
@@ -89,24 +161,16 @@ const filteredPosts = computed(() => {
   })
 })
 
-// this for handle delete post
 const deletePost = async () => {
   if (!postToDelete.value) return
 
   try {
     await postsApi.deletePost(postToDelete.value.post_id)
-
-    // Hapus dari list secara lokal (optimistic update)
     posts.value = posts.value.filter(p => p.post_id !== postToDelete.value.post_id)
-    
-    // Reset modal
     showDeleteConfirm.value = false
     postToDelete.value = null
-    
   } catch (err) {
     error.value = err.response?.data?.detail || 'Gagal menghapus data'
-    
-    // Auto hide error setelah 5 detik
     setTimeout(() => { error.value = null }, 5000)
   }
 }
@@ -121,8 +185,18 @@ const closeModal = () => {
   postToDelete.value = null
 }
 
-onMounted(() => {
-  fetchHistory()
+// Open image in new tab using canvas data URL (bukan blob URL)
+const viewImage = (canvasRef, post) => {
+  if (canvasRef) {
+    // Convert canvas to data URL (base64)
+    const dataUrl = canvasRef.toDataURL('image/png')
+    window.open(dataUrl, '_blank')
+  }
+}
+
+onMounted(async () => {
+  await fetchHistory()
+  await loadAllImagesToCanvas()
 })
 </script>
 
@@ -197,14 +271,15 @@ onMounted(() => {
           :key="post.post_id"
           class="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         >
-          <!-- Image -->
-          <div class="relative h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden">
-            <img
-              :src="post.imageBlobUrl || getImageUrl(post.image_url)"
-              alt="Hasil Deteksi"
+          <!-- Image Canvas (no src attribute visible) -->
+          <div class="relative h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden flex items-center justify-center">
+            <canvas
+              :data-post-id="post.post_id"
+              :width="400"
+              :height="300"
               class="w-full h-full object-contain p-4"
-              @error="(e) => e.target.src = 'https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia'"
-            />
+              style="max-width: 100%; max-height: 100%;"
+            ></canvas>
             <div class="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-2 py-1 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300 shadow">
               {{ formatRelativeTime(post.create_at) }}
             </div>
@@ -218,6 +293,11 @@ onMounted(() => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
               {{ formatDate(post.create_at) }}
+            </div>
+
+            <!-- Post ID Display -->
+            <div class="text-xs text-gray-400 dark:text-gray-500 font-mono">
+              ID: {{ post.post_id }}
             </div>
 
             <!-- Total Objects Badge -->
@@ -240,14 +320,12 @@ onMounted(() => {
 
             <!-- Actions -->
             <div class="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
-              <a
-                :href="post.imageBlobUrl || getImageUrl(post.image_url)"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                @click="viewImage($event.currentTarget.parentElement.parentElement.parentElement.querySelector('canvas'), post)"
                 class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl transition font-medium text-sm"
               >
                 🔍 Lihat Gambar
-              </a>
+              </button>
               <button
                 @click="confirmDelete(post)"
                 class="px-4 py-2.5 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl transition"
@@ -283,7 +361,7 @@ onMounted(() => {
         </router-link>
       </div>
 
-      <!-- ✅ Delete Confirmation Modal (FIXED) -->
+      <!-- Delete Confirmation Modal -->
       <Teleport to="body">
         <Transition name="modal">
           <div
